@@ -2,6 +2,8 @@ import os
 import telebot
 from dotenv import load_dotenv
 import requests
+from telebot import types
+import subprocess
 
 load_dotenv()
 
@@ -9,6 +11,36 @@ load_dotenv()
 BOT_TOKEN = os.environ.get('TELEGRAM_API_KEY')
 
 bot = telebot.TeleBot(BOT_TOKEN)
+
+def menu_interactivo(chat_id, opciones):
+    keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+    for opcion in opciones:
+        keyboard.add(opcion)
+    bot.send_message(chat_id, "Seleccione una opción:", reply_markup=keyboard)
+
+@bot.message_handler(commands=['menu'])
+def menu(message):
+    opciones = {
+        "start": "/start",
+        "aulas": "/aulas",
+        "usuarios": "/usuarios"
+    }
+    menu_interactivo(message.chat.id, opciones.keys())
+    bot.register_next_step_handler(message, lambda m: seleccionar_opcion(m, opciones))
+
+    def seleccionar_opcion(message, opciones):
+        opcion_seleccionada = message.text
+        if opcion_seleccionada in opciones:
+            comando = opciones[opcion_seleccionada]
+            mensaje_comando = f"Ejecuta el comando {comando}"
+            bot.send_message(message.chat.id, mensaje_comando)
+            try:
+                #ejecutar el comando /start
+                bot.send_message(message.chat.id, comando)
+            except Exception as e:
+                bot.send_message(message.chat.id, f"Error al ejecutar el comando: {str(e)}")
+        else:
+            bot.send_message(message.chat.id, "Opción inválida")
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -21,8 +53,9 @@ def aulas(message):
         bot.reply_to(message, "Aulas disponibles:")
         response = requests.get(url, verify=False)
         data = response.json()
-        numeros = ", ".join(aula["numero"] for aula in data)
-        bot.send_message(message.chat.id, f"Aquí están los números de aula disponibles: {numeros}")
+        for i, aula in enumerate(data, start=1):
+            numero = aula["numero"]
+            bot.send_message(message.chat.id, f"{i}. Aula #{numero}")
     except Exception as e:
         bot.reply_to(message, "Error al obtener las aulas")
 
@@ -48,5 +81,6 @@ def usuarios(message):
 bot.add_message_handler(start)
 bot.add_message_handler(aulas)
 bot.add_message_handler(usuarios)
+bot.add_message_handler(menu)
 
 bot.infinity_polling()
