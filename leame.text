@@ -1,0 +1,12 @@
+'''
+Nombre del Bot en telegram "NODO-BOT"
+
+iniciar el entorno virtual desde windows
+.\env\Scripts\activate 
+
+crear el archivo de dependencias
+pip freeze > requirements.txt
+
+para instalar requeriments.txt en caso de ser necesario
+pip install -r requirements.txt
+'''
