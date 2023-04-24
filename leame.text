@@ -1,8 +1,12 @@
 '''
+Buscarlo como "CURLP-BOT"
 Nombre del Bot en telegram "NODO-BOT"
 
 iniciar el entorno virtual desde windows
 .\env\Scripts\activate 
+
+para salir del entorno virtual escribir en consolo 
+"deactivate"
 
 crear el archivo de dependencias
 pip freeze > requirements.txt
