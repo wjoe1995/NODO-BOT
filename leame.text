@@ -1,4 +1,3 @@
-'''
 Buscarlo como "CURLP-BOT"
 Nombre del Bot en telegram "NODO-BOT"
 
@@ -19,4 +18,3 @@ pip install -r requirements.txt
 
 crear el archivo de dependencias
 pip freeze > requirements.txt
-'''
