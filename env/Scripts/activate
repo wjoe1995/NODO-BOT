@@ -44,7 +44,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV='C:\Users\wjoe1\OneDrive\Documentos\MEGAsync\UNAH-CURLP\IS-906 (Tópicos Especiales y Avanzados)\NODO-Telegram\NODO-BOT\env'
+VIRTUAL_ENV='C:\Users\Katia Aguilar\Documents\GitHub\NODO-BOT\env'
 if ([ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ]) && $(command -v cygpath &> /dev/null) ; then
     VIRTUAL_ENV=$(cygpath -u "$VIRTUAL_ENV")
 fi

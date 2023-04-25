@@ -57,7 +57,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV 'C:\Users\wjoe1\OneDrive\Documentos\MEGAsync\UNAH-CURLP\IS-906 (Tópicos Especiales y Avanzados)\NODO-Telegram\NODO-BOT\env'
+set -gx VIRTUAL_ENV 'C:\Users\Katia Aguilar\Documents\GitHub\NODO-BOT\env'
 
 # https://github.com/fish-shell/fish-shell/issues/436 altered PATH handling
 if test (echo $FISH_VERSION | head -c 1) -lt 3

@@ -1,4 +1,4 @@
-@set "VIRTUAL_ENV=C:\Users\wjoe1\OneDrive\Documentos\MEGAsync\UNAH-CURLP\IS-906 (Tópicos Especiales y Avanzados)\NODO-Telegram\NODO-BOT\env"
+@set "VIRTUAL_ENV=C:\Users\Katia Aguilar\Documents\GitHub\NODO-BOT\env"
 
 @if defined _OLD_VIRTUAL_PROMPT (
     @set "PROMPT=%_OLD_VIRTUAL_PROMPT%"
