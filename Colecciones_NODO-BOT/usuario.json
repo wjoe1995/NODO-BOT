@@ -1,0 +1,17 @@
+{
+    "id": 1,
+    "nombre_usuario": "root",
+    "password": "password",
+    "rol": {
+        "id": 1,
+        "nombre_rol": "Superadmin",
+        "permisos": [
+            {
+                "id": 1,
+                "nombre_permiso": "Acceso",
+                "descripcion": "Acceso al admin."
+            }
+        ]
+    },
+    "telefono": "n/a"
+}

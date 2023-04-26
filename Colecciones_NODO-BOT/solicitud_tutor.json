@@ -1,0 +1,17 @@
+{
+    "id": 0,
+    "estudiante": {
+        "numero_cuenta": "",
+        "nombre": "",
+        "activo": 0,
+        "tutor": 0,
+        "estudiante": 0,
+        "carrera": [],
+        "telefono": "",
+        "horario_tutor": []
+    },
+    "estado": "",
+    "fecha_hora": "",
+    "fecha_hora_resuelto": "",
+    "feedback": ""
+}
