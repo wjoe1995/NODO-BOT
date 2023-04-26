@@ -180,7 +180,7 @@ def handle_horario_selection(message, clase_id, horarios):
         # Create the tutor request
     url = 'https://localhost:8080/api/solicitud_tutor/crearSolicitudTutor'
     data = {
-        'estudiante': '6448125e30da409bf7eca39b',
+        'estudiante': '643b1767abf8200459d70aff',
         'clase': clase_id,
         'horario_solicitado': horario_id
     }
@@ -271,7 +271,7 @@ def handle_tutor_selection(message, clase_id, tutores):
             # Create the tutorship request
             url = ' https://localhost:8080/api/solicitud_tutoria/crearSolicitudTutoria'
             data = {
-                'estudiante': '6448118730da409bf7eca39a',
+                'estudiante': '643b2689abf8200459d70b1c',
                 'clase': clase_id,
                 'tutor': tutor_id,
                 'horario_solicitado': tutor_horario
@@ -307,25 +307,6 @@ def mostrar_solicitud_tutoria_command(message):
 def mostrar_solicitud_tutor_command(message):
 # Invocar la función de solicitud de tutoría
     eliminar_solicitud_tutor(bot, message)
-
-@bot.message_handler(commands=['clases'])
-def obtener_clases(message):
-    try:
-        url = 'https://localhost:8080/api/clases/'
-        bot.reply_to(message, "Clases registradas:")
-        response = requests.get(url, verify=False)
-        data = response.json()
-        clases_dict = {}
-        for i, clase in enumerate(data, start=1):
-            id_clase  = clase['_id']
-            nombre_clase = clase['nombre_clase']
-            codigo_clase = clase['codigo_clase']
-            carrera = ', '.join(carrera for carrera in clase['carrera'])
-            clases_dict[codigo_clase] = {'nombre_clase': nombre_clase, 'carrera': carrera}
-        for codigo_clase, clase_data in clases_dict.items():
-            bot.send_message(message.chat.id, f"{i}. Código de clase: {codigo_clase}\nNombre de la clase: {clase_data['nombre_clase']}\nCarrera(s): {clase_data['carrera']}")
-    except Exception as e:
-        bot.reply_to(message, "Error al obtener las clases" + str(e))
 
 
 bot.add_message_handler(start)

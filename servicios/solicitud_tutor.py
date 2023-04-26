@@ -13,7 +13,7 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 def mostrar_solicitud_tutor(message):
     try:
-        estudiante_id = '6448125e30da409bf7eca39b'
+        estudiante_id = '643b1767abf8200459d70aff'
         url = f'https://localhost:8080/api/solicitud_tutor/obtenerSolicitudTutorEstudiante/{estudiante_id}'
         bot.reply_to(message, "Estas son las solicitudes registradas:")
         response = requests.get(url, verify=False)
@@ -35,7 +35,7 @@ def mostrar_solicitud_tutor(message):
     
 def eliminar_solicitud_tutor(bot, message):
     try:
-        estudiante_id = '6448125e30da409bf7eca39b'
+        estudiante_id = '643b1767abf8200459d70aff'
         url = f'https://localhost:8080/api/solicitud_tutor/obtenerSolicitudTutorEstudiante/{estudiante_id}'
         bot.reply_to(message, "Estas son las solicitudes registradas:")
         response = requests.get(url, verify=False)
