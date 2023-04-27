@@ -3,6 +3,7 @@ import telebot
 from dotenv import load_dotenv
 import requests
 from telebot import types
+from servicios.obtenerEstudiante import obtener_id_estudiante
 
 load_dotenv()
 
@@ -13,9 +14,11 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 def mostrar_solicitud_tutor(message):
     try:
-        estudiante_id = '643b1767abf8200459d70aff'
+        id_telegram = message.chat.id
+        estudiante_id = obtener_id_estudiante(id_telegram)
         url = f'https://localhost:8080/api/solicitud_tutor/obtenerSolicitudTutorEstudiante/{estudiante_id}'
         bot.reply_to(message, "Estas son las solicitudes registradas:")
+       # Agregar el token JWT al encabezado de autorización
         response = requests.get(url, verify=False)
         solicitudes = response.json()
         if len(solicitudes) == 0:
@@ -35,7 +38,8 @@ def mostrar_solicitud_tutor(message):
     
 def eliminar_solicitud_tutor(bot, message):
     try:
-        estudiante_id = '643b1767abf8200459d70aff'
+        id_telegram = message.chat.id
+        estudiante_id = obtener_id_estudiante(id_telegram)
         url = f'https://localhost:8080/api/solicitud_tutor/obtenerSolicitudTutorEstudiante/{estudiante_id}'
         bot.reply_to(message, "Estas son las solicitudes registradas:")
         response = requests.get(url, verify=False)

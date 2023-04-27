@@ -12,15 +12,12 @@ load_dotenv()
 
 #1271515359
 BOT_TOKEN = os.environ.get('TELEGRAM_API_KEY')
-
 bot = telebot.TeleBot(BOT_TOKEN)
-
 def menu_interactivo(chat_id, opciones):
     keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
     for opcion in opciones:
         keyboard.add(opcion)
     bot.send_message(chat_id, "Seleccione una opción:", reply_markup=keyboard)
-
 @bot.message_handler(commands=['menu'])
 def menu(message):
     opciones = {
@@ -55,7 +52,7 @@ def menu(message):
     menu_interactivo(message.chat.id, opciones.keys())
     bot.register_next_step_handler(message, lambda m: seleccionar_opcion(m, opciones))
 
-  
+
 
     def seleccionar_opcion(message, opciones, historial=[]):
         opcion_seleccionada = message.text
@@ -81,9 +78,6 @@ def menu(message):
                     bot.send_message(message.chat.id, f"Error al ejecutar el comando: {str(e)}")
         else:
             bot.send_message(message.chat.id, "Opción inválida")
-
-
-
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
@@ -132,7 +126,7 @@ def crear_solicitud_tutor(message):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-    
+
     bot.reply_to(message, "Por favor, ingresa una clase atravez de su enumeración:(Por ejemplo 1)")
 def handle_clase_selection(message, clases):
     try:
@@ -215,7 +209,7 @@ def solicitar_tutoria(message):
         bot.register_next_step_handler(message, handle_clasetu_selection, clases)
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-    
+
     bot.reply_to(message, "Por favor, ingresa una clase atravez de su enumeración:(Por ejemplo 1)")
 def handle_clasetu_selection(message, clases):
     try:
