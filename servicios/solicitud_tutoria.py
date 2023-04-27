@@ -11,13 +11,16 @@ BOT_TOKEN = os.environ.get('TELEGRAM_API_KEY')
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-def mostrar_solicitud_tutoria(message):
+def mostrar_solicitud_tutoria(message, token):
     try:
         id_telegram = message.chat.id
         estudiante_id = obtener_id_estudiante(id_telegram)
         url = f'https://localhost:8080/api/solicitud_tutoria/obtenerSolicitudTutoriaEstu/{estudiante_id}'
+        headers = {
+            'Authorization': 'Bearer ' + token
+        }
         bot.reply_to(message, "Estas son las solicitudes registradas:")
-        response = requests.get(url, verify=False)
+        response = requests.get(url, headers=headers, verify=False)
         solicitudes = response.json()
         
         if len(solicitudes) == 0:
@@ -35,13 +38,17 @@ def mostrar_solicitud_tutoria(message):
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al buscar las solicitudes.")
 
-def eliminar_solicitud_tutoria(bot, message):
+def eliminar_solicitud_tutoria(bot, message, token):
     try:
         id_telegram = message.chat.id
         estudiante_id = obtener_id_estudiante(id_telegram)
         url = f'https://localhost:8080/api/solicitud_tutoria/obtenerSolicitudTutoriaEstu/{estudiante_id}'
         bot.reply_to(message, "Estas son las solicitudes registradas:")
-        response = requests.get(url, verify=False)
+        headers = {
+            'Authorization': 'Bearer ' + token
+        }
+       # Agregar el token JWT al encabezado de autorización
+        response = requests.get(url, headers=headers, verify=False)
         solicitudes = response.json()
         
         if len(solicitudes) == 0:
@@ -57,11 +64,11 @@ def eliminar_solicitud_tutoria(bot, message):
                 solicitud_info = f"{i}. Estudiante: {estudiante_nombre}\nTutor: {tutor_nombre}\nClase: {clase_nombre}\nHorario solicitado: {horario_solicitado}\nEstado: {estado}\n\n"
                 bot.send_message(message.chat.id, solicitud_info)
             
-            bot.register_next_step_handler(message, handle_solicitudtu_selection, solicitudes)
+            bot.register_next_step_handler(message, handle_solicitudtu_selection, solicitudes, token)
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-def handle_solicitudtu_selection(message, solicitudes):
+def handle_solicitudtu_selection(message, solicitudes,token):
     try:
         reply = message.text.strip()
         i = int(reply)
@@ -72,7 +79,11 @@ def handle_solicitudtu_selection(message, solicitudes):
             solicitud_id = solicitudes[i-1]['_id']
 
             url = f'https://localhost:8080/api/solicitud_tutoria/eliminarSolicitudTutoria/{solicitud_id}'
-            response = requests.delete(url, verify=False)
+            headers = {
+            'Authorization': 'Bearer ' + token
+            }
+       # Agregar el token JWT al encabezado de autorización
+            response = requests.get(url, headers=headers, verify=False)
 
             if response.status_code == 200:
                 bot.reply_to(message, "¡Gracias por eliminar la solicitud! Pronto nos pondremos en contacto contigo.")
@@ -82,15 +93,17 @@ def handle_solicitudtu_selection(message, solicitudes):
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
 
-
-def solicitar_tutoria(message):
+def solicitar_tutoria(message, token):
     try:
         # First, greet the user
         bot.reply_to(message, "Para crear una solicitud, ingresa los siguientes datos:")
 
         # Get the list of available classes
         url = 'https://localhost:8080/api/clases/'
-        response = requests.get(url, verify=False)
+        headers = {
+            'Authorization': 'Bearer ' + token
+        }
+        response = requests.get(url, headers=headers, verify=False)
         clases = response.json()
 
         # Display the list of classes to the user
@@ -99,16 +112,14 @@ def solicitar_tutoria(message):
             id_clase  = clase['_id']
             nombre_clase = clase['nombre_clase']
             codigo_clase = clase['codigo_clase']
-            carrera = ', '.join(carrera for carrera in clase['carrera'])
-            bot.send_message(message.chat.id, f"{i}. Código de clase: {codigo_clase}\nNombre de la clase: {nombre_clase}\nCarrera(s): {carrera}")
+            bot.send_message(message.chat.id, f"{i}. Código de clase: {codigo_clase}\nNombre de la clase: {nombre_clase}")
 
-        bot.register_next_step_handler(message, handle_clasetu_selection, clases)
+        bot.register_next_step_handler(message, handle_clasetu_selection, clases, token)
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
     
     bot.reply_to(message, "Por favor, ingresa una clase atravez de su enumeración:(Por ejemplo 1)")
-
-def handle_clasetu_selection(message, clases):
+def handle_clasetu_selection(message, clases,token):
     try:
         reply = message.text.strip()
         i = int(reply)
@@ -120,7 +131,10 @@ def handle_clasetu_selection(message, clases):
 
             # Get the list of available tutors
             url = f'https://localhost:8080/api/solicitud_tutor/obtenerSolicitudTutorClase/{clase_id}'
-            response = requests.get(url, verify=False)
+            headers = {
+            'Authorization': 'Bearer ' + token
+            }
+            response = requests.get(url, headers=headers, verify=False)
             tutores = response.json()
             text = message.text
 
@@ -143,14 +157,45 @@ def handle_clasetu_selection(message, clases):
                     horarios = tutor['horario_solicitado']['dia'] + " " + tutor['horario_solicitado']['hora']  
                     bot.send_message(message.chat.id, f"{i}. Nombre: {nombre}\nHorarios de tutorías: {horarios}")
 
-            bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores)
+            bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores, token)
 
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_clasetu_selection, clases)
+def handle_tutor_selection(message, clase_id, tutores, token):
+    try:
+        reply = message.text.strip()
+        i = int(reply)
+        if i < 1 or i > len(tutores):
+            bot.reply_to(message, f"Por favor, ingresa un número entre 1 al {len(tutores)}.")
+            bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores, token)
+        else:
+            tutor_id = tutores[i-1]['estudiante']
+            tutor_horario = tutores[i-1]['horario_solicitado']
+            id_telegram = message.chat.id
+            estudiante_id = obtener_id_estudiante(id_telegram)
+            # Create the tutorship request
+            url = ' https://localhost:8080/api/solicitud_tutoria/crearSolicitudTutoria'
+            headers = {
+            'Authorization': 'Bearer ' + token
+            }
+            data = {
+                'estudiante': estudiante_id,
+                'clase': clase_id,
+                'tutor': tutor_id,
+                'horario_solicitado': tutor_horario
+            }
+            response = requests.post(url, json=data,headers=headers, verify=False)
 
+            if response.status_code == 200:
+                bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
+            else:
+                bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
 
-def handle_tutor_selection(message, clase_id, tutores):
+    except ValueError:
+        bot.reply_to(message, "Por favor, ingresa un número válido.")
+        bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores, token)
+
     try:
         reply = message.text.strip()
         i = int(reply)

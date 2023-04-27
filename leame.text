@@ -14,3 +14,22 @@ pip freeze > requirements.txt
 para instalar requeriments.txt en caso de ser necesario
 pip install -r requirements.txt
 '''
+
+
+'''
+comandos = {
+    login
+    menu
+    start
+    aulas
+    usuarios
+    solicitudSerTutor
+    solicitarTutoria
+    miSolicitudTutor
+    miSolicitudTutoria
+    eliminarSolicitudTutoria
+    eliminarSolicitudTutor
+    verHistorialTutoriasImpartidas
+    verHistorialTutoriasRecibidas
+    }
+'''
