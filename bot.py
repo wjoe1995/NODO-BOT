@@ -3,10 +3,11 @@ import telebot
 from dotenv import load_dotenv
 import requests
 from telebot import types
-import subprocess
+import base64
 from servicios.solicitud_tutoria import mostrar_solicitud_tutoria, solicitar_tutoria, eliminar_solicitud_tutoria
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , crear_solicitud_tutor, eliminar_solicitud_tutor
 from servicios.usuario import usuarios
+from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 
 load_dotenv()
 
@@ -14,6 +15,63 @@ load_dotenv()
 BOT_TOKEN = os.environ.get('TELEGRAM_API_KEY')
 
 bot = telebot.TeleBot(BOT_TOKEN)
+
+# Variable global para almacenar los datos de autenticación
+auth_data = {}
+# Variable global para el estado de autenticación
+authenticated = False
+
+# Manejar el comando /login
+@bot.message_handler(commands=['login'])
+def handle_login(message):
+    global authenticated
+    # Obtener el ID de chat del usuario
+    chat_id = message.chat.id
+    # Enviar un mensaje de inicio de sesión al usuario
+    bot.send_message(chat_id, 'Por favor, inicia sesión. Ingresa tu nombre de usuario y contraseña separados por un espacio.')
+    # Restablecer el estado de autenticación
+    authenticated = False
+    
+# Manejar los mensajes de texto
+@bot.message_handler(func=lambda message: True)
+def handle_text(message):
+    global authenticated
+    try:
+        if not authenticated:
+            # URL de la API de inicio de sesión
+            login_url = 'https://localhost:8080/api/auth/'
+            # Obtener el ID de chat del usuario
+            chat_id = message.chat.id
+            # Obtener el nombre de usuario y contraseña ingresados por el usuario
+            username, password = message.text.split(' ')
+            # Crear los encabezados de la solicitud con el nombre de usuario y contraseña
+            headers = {'Authorization': 'Basic ' + base64.b64encode(f'{username}:{password}'.encode()).decode()}
+            # Realizar la solicitud de inicio de sesión a la API con los encabezados
+            response = requests.post(login_url, headers=headers, verify=False)
+            if response.status_code == 200:
+                # El inicio de sesión fue exitoso
+                data = response.json()
+                auth_data['token'] = data['token']
+                auth_data['usuario'] = data['usuario']
+                bot.send_message(chat_id, 'Inicio de sesión exitoso.')
+                bot.send_message(chat_id, 'Bienvnido: ' + auth_data['usuario'])
+                # Actualizar el estado de autenticación
+                authenticated = True
+            else:
+                # El inicio de sesión falló
+                bot.send_message(chat_id, 'Error en el inicio de sesión.')
+        else:
+            # El usuario ya está autenticado, manejar otros comandos aquí
+            if message.text == '/menu':
+                menu(message)
+            elif message.text == '/verHistorialTutoriasImpartidas':
+                historial_tutorias_impartidas_command(message)
+            elif message.text == '/verHistorialTutoriasRecibidas':
+                historial_tutorias_recibidas_command(message)
+            else:
+                bot.send_message(chat_id, 'Comando después de iniciar sesión.')
+    except Exception as e:
+        bot.reply_to(message, 'Error al iniciar sesión. Por favor, inténtalo de nuevo.' + str(e))
 
 def menu_interactivo(chat_id, opciones):
     keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
@@ -30,7 +88,6 @@ def menu(message):
         "Solicitud de Registro de Estudiantes": "/solicitudRegistroEstudiantes",
         "Tutorias": {
             "Ver tutorias disponibles": "/verTutoriasDisponibles",
-            "Ver tutorias activas": "/verTutoriasActivas",
             "Ver mi historial de tutorias recibidas": "/verHistorialTutoriasRecibidas",
             "Regresar": "back"
         },
@@ -47,15 +104,12 @@ def menu(message):
                 "Regresar": "back"
             },
         "Opciones de tutor": {
-            "Ver tutorias activas": "/verTutoriasActivas",
             "Ver mi historial de tutorias impartidas": "/verHistorialTutoriasImpartidas",
             "Regresar": "back"
             }, 
     }
     menu_interactivo(message.chat.id, opciones.keys())
     bot.register_next_step_handler(message, lambda m: seleccionar_opcion(m, opciones))
-
-  
 
     def seleccionar_opcion(message, opciones, historial=[]):
         opcion_seleccionada = message.text
@@ -82,12 +136,9 @@ def menu(message):
         else:
             bot.send_message(message.chat.id, "Opción inválida")
 
-
-
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
-
 
 @bot.message_handler(commands=['aulas'])
 def aulas(message):
@@ -106,7 +157,6 @@ def aulas(message):
 def usuarios_command(message):
 # Invocar la función de solicitud de tutoría
     usuarios(message)
-
 
 @bot.message_handler(commands=['solicitudSerTutor'])
 def crear_solicitud_tutor(message):
@@ -190,7 +240,6 @@ def handle_horario_selection(message, clase_id, horarios):
         bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
     else:
         bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
-
 
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria(message):
@@ -297,7 +346,6 @@ def mostrar_solicitud_tutoria_command(message):
 # Invocar la función de solicitud de tutoría
     mostrar_solicitud_tutoria(message)
 
-
 @bot.message_handler(commands=['eliminarSolicitudTutoria'])
 def mostrar_solicitud_tutoria_command(message):
 # Invocar la función de solicitud de tutoría
@@ -308,8 +356,29 @@ def mostrar_solicitud_tutor_command(message):
 # Invocar la función de solicitud de tutoría
     eliminar_solicitud_tutor(bot, message)
 
+@bot.message_handler(commands=['verHistorialTutoriasImpartidas'])
+def historial_tutorias_impartidas_command(message):
+    if auth_data['token'] is not None:
+        token = auth_data['token']
+        usuario = auth_data['usuario']
+        obtenerTutoriasEstudianteTutor(message,token)
+    else:
+        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+
+@bot.message_handler(commands=['verHistorialTutoriasRecibidas'])
+def historial_tutorias_recibidas_command(message):
+    #Verificamos si se ha realizado el inicio de sesión
+    if auth_data['token'] is not None:
+        # Realizar la lógica de la otra función utilizando los datos de autenticación
+        token = auth_data['token']
+        # el usuario en caso de ser necesario usarlo aqui estara disponible
+        usuario = auth_data['usuario']
+        obtenerTutoriasEstudianteEstudiante(message,token)
+    else:
+        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
 
 bot.add_message_handler(start)
+bot.add_message_handler(handle_login)
 bot.add_message_handler(aulas)
 bot.add_message_handler(usuarios)
 bot.add_message_handler(crear_solicitud_tutor)
@@ -318,8 +387,10 @@ bot.add_message_handler(mostrar_solicitud_tutor)
 bot.add_message_handler(mostrar_solicitud_tutoria)
 bot.add_message_handler(eliminar_solicitud_tutoria)
 bot.add_message_handler(eliminar_solicitud_tutor)
+bot.add_message_handler(obtenerTutoriasEstudianteTutor)
+bot.add_message_handler(obtenerTutoriasEstudianteEstudiante)
 bot.add_message_handler(menu)
 
 
-bot.infinity_polling()
+bot.polling()
 
