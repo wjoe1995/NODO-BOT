@@ -6,7 +6,6 @@ from telebot import types
 import base64
 from servicios.solicitud_tutoria import mostrar_solicitud_tutoria, solicitar_tutoria, eliminar_solicitud_tutoria
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , crear_solicitud_tutor, eliminar_solicitud_tutor
-from servicios.usuario import usuarios
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
 #from servicios.solicitud_estudiante import crear_solicitud_estudiante
@@ -17,85 +16,6 @@ load_dotenv()
 #1271515359
 BOT_TOKEN = os.environ.get('TELEGRAM_API_KEY')
 bot = telebot.TeleBot(BOT_TOKEN)
-
-# Variable global para almacenar los datos de autenticación
-auth_data = {}
-# Variable global para el estado de autenticación
-authenticated = False
-
-# Manejar el comando /login
-@bot.message_handler(commands=['login'])
-def handle_login(message):
-    url = f'https://localhost:8080/api/estudiantes/extraer/{message.chat.id}'
-    response = requests.get(url, verify=False)
-
-    if response.status_code != 200:
-        bot.reply_to(message, "REGISTRATE  haciendo click en: /solicitudEstudiante")
-        return
-    else:
-        global authenticated
-        # Obtener el ID de chat del usuario
-        chat_id = message.chat.id
-        # Enviar un mensaje de inicio de sesión al usuario
-        bot.send_message(chat_id, 'Por favor, inicia sesión. Ingresa tu nombre de usuario y contraseña separados por un espacio.')
-        # Restablecer el estado de autenticación
-        authenticated = False
-    
-# Manejar los mensajes de texto
-@bot.message_handler(func=lambda message: True)
-def handle_text(message):
-    global authenticated
-    try:
-        if message.text == '/solicitudEstudiante':
-            #mostrar_solicitud_tutoria_command
-            crear_solicitud_estudiante(bot, message)
-        elif not authenticated:
-            # URL de la API de inicio de sesión
-            login_url = 'https://localhost:8080/api/auth/'
-            # Obtener el ID de chat del usuario
-            chat_id = message.chat.id
-            # Obtener el nombre de usuario y contraseña ingresados por el usuario
-            username, password = message.text.split(' ')
-            # Crear los encabezados de la solicitud con el nombre de usuario y contraseña
-            headers = {'Authorization': 'Basic ' + base64.b64encode(f'{username}:{password}'.encode()).decode()}
-            # Realizar la solicitud de inicio de sesión a la API con los encabezados
-            response = requests.post(login_url, headers=headers, verify=False)
-            if response.status_code == 200:
-                # El inicio de sesión fue exitoso
-                data = response.json()
-                auth_data['token'] = data['token']
-                auth_data['usuario'] = data['usuario']
-                bot.send_message(chat_id, 'Inicio de sesión exitoso.')
-                bot.send_message(chat_id, 'Bienvnido: ' + auth_data['usuario'])
-                # Actualizar el estado de autenticación
-                authenticated = True
-            else:
-                # El inicio de sesión falló
-                bot.send_message(chat_id, 'Error en el inicio de sesión.')
-        else:
-            # El usuario ya está autenticado, manejar otros comandos aquí
-            if message.text == '/menu':
-                menu(message)
-            elif message.text == '/verHistorialTutoriasImpartidas':
-                historial_tutorias_impartidas_command(message)
-            elif message.text == '/verHistorialTutoriasRecibidas':
-                historial_tutorias_recibidas_command(message)
-            elif message.text == '/miSolicitudTutoria':
-                mostrar_solicitud_tutoria_command(message)
-            elif message.text == '/miSolicitudTutor':
-                mostrar_solicitud_tutor_command(message)
-            elif message.text == '/eliminarSolicitudTutoria': 
-                eliminar_solicitud_tutoria_command(message)
-            elif message.text == '/eliminarSolicitudTutor':   
-                eliminar_solicitud_tutor_command(message)  
-            elif message.text == '/solicitarTutoria': 
-                solicitar_tutoria_command(message)
-            elif message.text == '/solicitudSerTutor': 
-                solicitar_tutor_command(message)
-            else:
-                bot.send_message(chat_id, 'Comando después de iniciar sesión.')
-    except Exception as e:
-        bot.reply_to(message, 'Error al iniciar sesión. Por favor, inténtalo de nuevo.' + str(e))
 
 def menu_interactivo(chat_id, opciones):
     keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
@@ -116,9 +36,6 @@ def menu(message):
     # Verificar si el estudiante ha sido aprobado
     if estudiante["activo"] == 1:
         opciones = {
-            #"start": "/start",
-            #"aulas": "/aulas",
-            #"usuarios": "/usuarios",
             "Tutorias": {
                 "Ver tutorias disponibles": "/verTutoriasDisponibles",
                 "Ver tutorias activas": "/verTutoriasActivas",
@@ -138,6 +55,7 @@ def menu(message):
                 "Regresar": "back"
             },
             "Opciones de tutor": {
+                "Ver solicitudes de tutorias": "/verSolicitudesdeTutorias",
                 "Ver tutorias activas": "/verTutoriasActivas",
                 "Ver mi historial de tutorias impartidas": "/verHistorialTutoriasImpartidas",
                 "Regresar": "back"
@@ -177,24 +95,6 @@ def menu(message):
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
 
-@bot.message_handler(commands=['aulas'])
-def aulas(message):
-    try:
-        url = 'https://localhost:8080/api/aulas/'
-        bot.reply_to(message, "Aulas disponibles:")
-        response = requests.get(url, verify=False)
-        data = response.json()
-        for i, aula in enumerate(data, start=1):
-            numero = aula["numero"]
-            bot.send_message(message.chat.id, f"{i}. Aula #{numero}")
-    except Exception as e:
-        bot.reply_to(message, "Error al obtener las aulas")
-
-@bot.message_handler(commands=['usuarios'])
-def usuarios_command(message):
-# Invocar la función de solicitud de tutoría
-    usuarios(message)
-    
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
     if auth_data['token'] is not None:
@@ -212,7 +112,6 @@ def solicitar_tutor_command(message):
         crear_solicitud_tutor(message,token)
     else:
         bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
-
 
 @bot.message_handler(commands=['miSolicitudTutor'])
 def mostrar_solicitud_tutor_command(message):
@@ -258,24 +157,11 @@ def eliminar_solicitud_tutor_command(message):
 
 @bot.message_handler(commands=['verHistorialTutoriasImpartidas'])
 def historial_tutorias_impartidas_command(message):
-    if auth_data['token'] is not None:
-        token = auth_data['token']
-        usuario = auth_data['usuario']
-        obtenerTutoriasEstudianteTutor(message,token)
-    else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+    obtenerTutoriasEstudianteTutor(message)
 
 @bot.message_handler(commands=['verHistorialTutoriasRecibidas'])
 def historial_tutorias_recibidas_command(message):
-    #Verificamos si se ha realizado el inicio de sesión
-    if auth_data['token'] is not None:
-        # Realizar la lógica de la otra función utilizando los datos de autenticación
-        token = auth_data['token']
-        # el usuario en caso de ser necesario usarlo aqui estara disponible
-        usuario = auth_data['usuario']
-        obtenerTutoriasEstudianteEstudiante(message,token)
-    else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+    obtenerTutoriasEstudianteEstudiante(message)
 
 
 #Formulario para Ingresar Estudiante
@@ -578,9 +464,6 @@ def handle_horario_selection(message, clase_id, horarios,token):
 
 
 bot.add_message_handler(start)
-bot.add_message_handler(handle_login)
-bot.add_message_handler(aulas)
-bot.add_message_handler(usuarios)
 bot.add_message_handler(crear_solicitud_tutor)
 bot.add_message_handler(solicitar_tutoria)
 bot.add_message_handler(mostrar_solicitud_tutor)
