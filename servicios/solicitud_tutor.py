@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import requests
 from telebot import types
 from servicios.obtenerEstudiante import obtener_id_estudiante
-from bson.objectid import ObjectId
+
 
 load_dotenv()
 
