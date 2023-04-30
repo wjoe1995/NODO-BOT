@@ -6,7 +6,6 @@ from telebot import types
 import base64
 from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_solicitud_tutoria
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
-from servicios.usuario import usuarios
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
 
@@ -98,11 +97,6 @@ def menu(message):
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
-
-@bot.message_handler(commands=['usuarios'])
-def usuarios_command(message):
-# Invocar la función de solicitud de tutoría
-    usuarios(message)
     
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
@@ -542,7 +536,6 @@ def handle_another_horario(message, clase_id, horarios_ids):
 
 
 bot.add_message_handler(start)
-bot.add_message_handler(usuarios)
 bot.add_message_handler(crear_solicitud_tutor)
 bot.add_message_handler(solicitar_tutoria)
 bot.add_message_handler(mostrar_solicitud_tutor)
