@@ -165,7 +165,8 @@ def historial_tutorias_recibidas_command(message):
 
 
 #Formulario para Ingresar Estudiante
-def crear_solicitud_estudiante(bot,message):
+@bot.message_handler(commands=['solicitudEstudiante'])
+def crear_solicitud_estudiante(message):
     try:
         # Inicializar el objeto de solicitud de tutoría
         solicitud = {"estudiante": {}}
@@ -476,4 +477,4 @@ bot.add_message_handler(crear_solicitud_estudiante)
 bot.add_message_handler(menu)
 
 
-bot.polling()
+bot.infinity_polling()
