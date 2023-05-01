@@ -123,7 +123,6 @@ def mostrar_solicitud_tutoria_command(message):
     else:
         bot.reply_to(message, "Ya hicistes la solicitud. Por favor, comunicate con VOAE, para que aprueben tu solicitud.")
 
-
 @bot.message_handler(commands=['eliminarSolicitudTutoria'])
 def eliminar_solicitud_tutoria_command(message):
     eliminar_solicitud_tutoria(bot, message)
@@ -367,7 +366,6 @@ def crear_solicitud_tutor(message, ):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_clase_selection(message, clases):
     try:
         reply = message.text.strip()
@@ -385,7 +383,6 @@ def handle_clase_selection(message, clases):
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_clase_selection, clases)
-
 def mostrar_dias_disponibles(message, clase_id,horarios_ids):
     try:
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
@@ -406,7 +403,6 @@ def mostrar_dias_disponibles(message, clase_id,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
     try:
         # Obtenemos el número de día seleccionado por el usuario
@@ -425,7 +421,6 @@ def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
     try:
         # Llamamos a la API para obtener los horarios disponibles para el día seleccionado
@@ -448,7 +443,6 @@ def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot AQUIIIIIIIII")
-
 def handle_horario_selection(message, clase_id, horarios,horarios_ids):
     try:
         reply = message.text.strip()
