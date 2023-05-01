@@ -8,7 +8,6 @@ from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_sol
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
-
 #from servicios.solicitud_estudiante import crear_solicitud_estudiante
 import re
 
@@ -97,7 +96,7 @@ def menu(message):
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
-    
+
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
     mostrar_carrera_disponibles(message)
@@ -124,7 +123,6 @@ def mostrar_solicitud_tutoria_command(message):
     else:
         bot.reply_to(message, "Ya hicistes la solicitud. Por favor, comunicate con VOAE, para que aprueben tu solicitud.")
 
-
 @bot.message_handler(commands=['eliminarSolicitudTutoria'])
 def eliminar_solicitud_tutoria_command(message):
     eliminar_solicitud_tutoria(bot, message)
@@ -143,6 +141,7 @@ def historial_tutorias_recibidas_command(message):
 
 
 #Formulario para Ingresar Estudiante
+@bot.message_handler(commands=['solicitudEstudiante'])
 def crear_solicitud_estudiante(message):
     try:
         # Inicializar el objeto de solicitud de tutoría
@@ -478,7 +477,6 @@ def mostrar_dias_disponibles(message, clase_id,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
     try:
         # Obtenemos el número de día seleccionado por el usuario
@@ -497,7 +495,6 @@ def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
     try:
         # Llamamos a la API para obtener los horarios disponibles para el día seleccionado
@@ -520,7 +517,6 @@ def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot AQUIIIIIIIII")
-
 def handle_horario_selection(message, clase_id, horarios,horarios_ids):
     try:
         reply = message.text.strip()
