@@ -100,11 +100,11 @@ def start(message):
     
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
-    solicitar_tutoria(message)
+    mostrar_carrera_disponibles(message)
 
 @bot.message_handler(commands=['solicitudSerTutor'])
 def solicitar_tutor_command(message):
-    crear_solicitud_tutor(message)
+    mostrar_carreras_disponibles(message)
 
 
 @bot.message_handler(commands=['miSolicitudTutor'])
@@ -164,19 +164,10 @@ def obtener_nombre(message, solicitud):
 
     # Pedir al usuario el nombre completo
     bot.reply_to(message, "Por favor ingrese el nombre completo del estudiante.")
-
-    # Registrar el siguiente paso de la conversación con una función lambda separada
-    bot.register_next_step_handler(message, lambda respuesta: obtener_nombre_ca(respuesta, solicitud))
-def obtener_nombre_ca(message, solicitud):
-    # Guardar el nombre completo en la solicitud
-    solicitud["estudiante"]["nombre"] = message.text
-
-    # Pedir al usuario la carrera
-    bot.reply_to(message, "Por favor confirma tu nombre:")
-
     # Registrar el siguiente paso de la conversación con una función lambda separada
     bot.register_next_step_handler(message, lambda respuesta: obtener_carrera(respuesta, solicitud))
 def obtener_carrera(message, solicitud):
+    solicitud["estudiante"]["nombre"] = message.text
     # Realizar una petición GET a la API para obtener la lista de carreras
     url = "https://localhost:8080/api/carreras/obtenerCarreras"
     response = requests.get(url, verify=False)
@@ -239,19 +230,56 @@ def enviar_solicitud(message, solicitud):
     # Comprobar si se creó la solicitud correctamente
     if response.status_code == 200:
         bot.reply_to(message, "La solicitud de estudiante se creó correctamente.")
+        bot.reply_to(message, "Se le habilitaran las opciones cuando se apruebe la solicitud en Administración.")
     elif response.status_code == 409:
         bot.reply_to(message, "El estudiante ya existe.")
     else:
         bot.reply_to(message, "Ocurrió un error al crear la solicitud de estudiante.")
 
 #FORMULARIO TUTORIA
-def solicitar_tutoria(message):
+def mostrar_carrera_disponibles(message):
+    try:
+        # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
+        carreras = {
+            "1": "Ingeniería en Sistemas",
+            "2": "Administración de Empresas",
+                }
+        # Mostramos los días al usuario
+        carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
+        bot.reply_to(message, f"Las Carreras disponibles son:\n{carrer}\n¿Cuál día deseas seleccionar?")
+
+        # Registramos el siguiente paso para manejar la selección del usuario
+        bot.register_next_step_handler(message, handle_tuto_selection, carreras)
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot")
+
+def handle_tuto_selection(message, carreras):
+    try:
+        # Obtenemos el número de carrera seleccionado por el usuario
+        num_carrera = message.text.strip()
+
+        # Verificamos si el número de carrera seleccionado es válido
+        if num_carrera not in carreras:
+            bot.reply_to(message, "Selecciona un número de carrera válido.")
+            return
+
+        # Obtenemos la carrera correspondiente al número seleccionado
+        carrera_elegida = carreras[num_carrera]
+
+        # Llamamos a la función para mostrar las clases disponibles para la carrera seleccionada
+        solicitar_tutoria(message, carrera_elegida)
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot")
+
+def solicitar_tutoria(message, carrera_elegida):
     try:
         # First, greet the user
         bot.reply_to(message, "Para crear una solicitud, ingresa los siguientes datos:")
 
         # Get the list of available classes
-        url = 'https://localhost:8080/api/clases/'
+        url = f"https://localhost:8080/api/clases/carrera/{carrera_elegida}"
         
         response = requests.get(url,  verify=False)
         clases = response.json()
@@ -319,37 +347,82 @@ def handle_tutor_selection(message, clase_id, tutores):
             bot.reply_to(message, f"Por favor, ingresa un número entre 1 al {len(tutores)}.")
             bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores)
         else:
-            tutor_id = tutores[i-1]['estudiante']
+            tutor_id = tutores[i-1]['estudiante']['_id']
             tutor_horario = tutores[i-1]['horario_solicitado']
             id_telegram = message.chat.id
             estudiante_id = obtener_id_estudiante(id_telegram)
-            # Create the tutorship request
-            url = ' https://localhost:8080/api/solicitud_tutoria/crearSolicitudTutoria'
-            data = {
-                'estudiante': estudiante_id,
-                'clase': clase_id,
-                'tutor': tutor_id,
-                'horario_solicitado': tutor_horario
-            }
-            response = requests.post(url, json=data, verify=False)
-
-            if response.status_code == 200:
-                bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
+            print(tutor_id)
+            print(estudiante_id)
+            if estudiante_id == tutor_id:
+                    bot.reply_to(message, f"Esta intentando crear una tutoria con datos erroneos.")  
+                    bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
             else:
-                bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
+                # Create the tutorship request
+                url = ' https://localhost:8080/api/solicitud_tutoria/crearSolicitudTutoria'
+                data = {
+                    'estudiante': estudiante_id,
+                    'clase': clase_id,
+                    'tutor': tutor_id,
+                    'horario_solicitado': tutor_horario
+                }
+                response = requests.post(url, json=data, verify=False)
+
+                if response.status_code == 200:
+                    bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
+                    bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
+                elif response.status_code == 400:
+                    bot.reply_to(message, "¡Esta haciendo un registro que ya existe! Ya solicito esa clase antes")
+                    bot.reply_to(message, "Regrese al menú haciendo click en /menu y revise el estado de su solicitud")
+                else:
+                    bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
+                    bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
 
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores)
 
-#FORMULARIO TUTOR
-def crear_solicitud_tutor(message, ):
+def mostrar_carreras_disponibles(message):
+    try:
+        # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
+        carreras = {
+            "1": "Ingeniería en Sistemas",
+            "2": "Administración de Empresas",
+                }
+        # Mostramos los días al usuario
+        carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
+        bot.reply_to(message, f"Las Carreras disponibles son:\n{carrer}\n¿Cuál día deseas seleccionar?")
+
+        # Registramos el siguiente paso para manejar la selección del usuario
+        bot.register_next_step_handler(message, handle_y_selection, carreras)
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot")
+
+def handle_y_selection(message, carreras):
+    try:
+        # Obtenemos el número de carrera seleccionado por el usuario
+        num_carrera = message.text.strip()
+
+        # Verificamos si el número de carrera seleccionado es válido
+        if num_carrera not in carreras:
+            bot.reply_to(message, "Selecciona un número de carrera válido.")
+            return
+
+        # Obtenemos la carrera correspondiente al número seleccionado
+        carrera_elegida = carreras[num_carrera]
+
+        # Llamamos a la función para mostrar las clases disponibles para la carrera seleccionada
+        crear_solicitud_tutor(message, carrera_elegida)
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot")
+def crear_solicitud_tutor(message,carrera_elegida ):
     try:
         # First, greet the user
         bot.reply_to(message, "Para crear una solicitud, ingresa los siguientes datos:")
 
         # Get the list of available classes
-        url = 'https://localhost:8080/api/clases/'
+        url = f"https://localhost:8080/api/clases/carrera/{carrera_elegida}"
 
         response = requests.get(url, verify=False)
         clases = response.json()
@@ -363,11 +436,11 @@ def crear_solicitud_tutor(message, ):
             bot.send_message(message.chat.id, f"{i}. Código de clase: {codigo_clase}\nNombre de la clase: {nombre_clase}")
 
         # Registramos el siguiente paso para manejar la selección de la clase por parte del usuario
+        bot.reply_to(message, f"Por favor, ingresa un valor de 1 al {len(clases)} para elegir la clase que deseas agregar")
         bot.register_next_step_handler(message, handle_clase_selection, clases)
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_clase_selection(message, clases):
     try:
         reply = message.text.strip()
@@ -385,7 +458,6 @@ def handle_clase_selection(message, clases):
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_clase_selection, clases)
-
 def mostrar_dias_disponibles(message, clase_id,horarios_ids):
     try:
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
@@ -495,8 +567,13 @@ def handle_another_horario(message, clase_id, horarios_ids):
 
             if response.status_code == 200:
                 bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
+                bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
+            elif response.status_code == 400:
+                bot.reply_to(message, "¡Esta haciendo un registro que ya existe! Ya solicito esa clase antes")
+                bot.reply_to(message, "Regrese al menú haciendo click en /menu y revise el estado de su solicitud")
             else:
                 bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
+                bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
 
         elif reply == "sí":
             # Ask the user for another horario ID
@@ -532,7 +609,6 @@ def handle_another_horario(message, clase_id, horarios_ids):
 
         # Registramos el siguiente paso para manejar la selección del usuario
         bot.register_next_step_handler(message, handle_day_selection, clase_id, dias_semana,horarios_ids)
-
 
 
 bot.add_message_handler(start)
