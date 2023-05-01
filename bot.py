@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 import requests
 from telebot import types
 import base64
-from servicios.solicitud_tutoria import mostrar_solicitud_tutoria, solicitar_tutoria, eliminar_solicitud_tutoria
-from servicios.solicitud_tutor import  mostrar_solicitud_tutor , crear_solicitud_tutor, eliminar_solicitud_tutor
+from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_solicitud_tutoria
+from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
 #from servicios.solicitud_estudiante import crear_solicitud_estudiante
@@ -36,6 +36,9 @@ def menu(message):
     # Verificar si el estudiante ha sido aprobado
     if estudiante["activo"] == 1:
         opciones = {
+            #"start": "/start",
+            #"aulas": "/aulas",
+            #"usuarios": "/usuarios",
             "Tutorias": {
                 "Ver tutorias disponibles": "/verTutoriasDisponibles",
                 "Ver tutorias activas": "/verTutoriasActivas",
@@ -55,7 +58,6 @@ def menu(message):
                 "Regresar": "back"
             },
             "Opciones de tutor": {
-                "Ver solicitudes de tutorias": "/verSolicitudesdeTutorias",
                 "Ver tutorias activas": "/verTutoriasActivas",
                 "Ver mi historial de tutorias impartidas": "/verHistorialTutoriasImpartidas",
                 "Regresar": "back"
@@ -103,6 +105,7 @@ def solicitar_tutoria_command(message):
 def solicitar_tutor_command(message):
     crear_solicitud_tutor(message)
 
+
 @bot.message_handler(commands=['miSolicitudTutor'])
 def mostrar_solicitud_tutor_command(message):
     mostrar_solicitud_tutor(message)
@@ -119,7 +122,6 @@ def mostrar_solicitud_tutoria_command(message):
         crear_solicitud_estudiante(message)
     else:
         bot.reply_to(message, "Ya hicistes la solicitud. Por favor, comunicate con VOAE, para que aprueben tu solicitud.")
-
 
 @bot.message_handler(commands=['eliminarSolicitudTutoria'])
 def eliminar_solicitud_tutoria_command(message):
@@ -364,7 +366,6 @@ def crear_solicitud_tutor(message, ):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_clase_selection(message, clases):
     try:
         reply = message.text.strip()
@@ -382,7 +383,6 @@ def handle_clase_selection(message, clases):
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_clase_selection, clases)
-
 def mostrar_dias_disponibles(message, clase_id,horarios_ids):
     try:
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
@@ -403,7 +403,6 @@ def mostrar_dias_disponibles(message, clase_id,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
     try:
         # Obtenemos el número de día seleccionado por el usuario
@@ -422,7 +421,6 @@ def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
     try:
         # Llamamos a la API para obtener los horarios disponibles para el día seleccionado
@@ -445,7 +443,6 @@ def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot AQUIIIIIIIII")
-
 def handle_horario_selection(message, clase_id, horarios,horarios_ids):
     try:
         reply = message.text.strip()
