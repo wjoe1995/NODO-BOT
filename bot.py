@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 import requests
 from telebot import types
 import base64
-from servicios.solicitud_tutoria import mostrar_solicitud_tutoria, solicitar_tutoria, eliminar_solicitud_tutoria
-from servicios.solicitud_tutor import  mostrar_solicitud_tutor , crear_solicitud_tutor, eliminar_solicitud_tutor
+from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_solicitud_tutoria
+from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
 #from servicios.solicitud_estudiante import crear_solicitud_estudiante
@@ -36,6 +36,9 @@ def menu(message):
     # Verificar si el estudiante ha sido aprobado
     if estudiante["activo"] == 1:
         opciones = {
+            #"start": "/start",
+            #"aulas": "/aulas",
+            #"usuarios": "/usuarios",
             "Tutorias": {
                 "Ver tutorias disponibles": "/verTutoriasDisponibles",
                 "Ver tutorias activas": "/verTutoriasActivas",
@@ -55,7 +58,6 @@ def menu(message):
                 "Regresar": "back"
             },
             "Opciones de tutor": {
-                "Ver solicitudes de tutorias": "/verSolicitudesdeTutorias",
                 "Ver tutorias activas": "/verTutoriasActivas",
                 "Ver mi historial de tutorias impartidas": "/verHistorialTutoriasImpartidas",
                 "Regresar": "back"
@@ -102,6 +104,7 @@ def solicitar_tutoria_command(message):
 @bot.message_handler(commands=['solicitudSerTutor'])
 def solicitar_tutor_command(message):
     crear_solicitud_tutor(message)
+
 
 @bot.message_handler(commands=['miSolicitudTutor'])
 def mostrar_solicitud_tutor_command(message):
