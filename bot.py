@@ -141,7 +141,6 @@ def historial_tutorias_recibidas_command(message):
 
 
 #Formulario para Ingresar Estudiante
-@bot.message_handler(commands=['solicitudEstudiante'])
 def crear_solicitud_estudiante(message):
     try:
         # Inicializar el objeto de solicitud de tutoría
@@ -380,6 +379,7 @@ def handle_tutor_selection(message, clase_id, tutores):
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores)
 
+#FORMULARIO TUTOR
 def mostrar_carreras_disponibles(message):
     try:
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
