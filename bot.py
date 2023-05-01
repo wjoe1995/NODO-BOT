@@ -4,9 +4,14 @@ from dotenv import load_dotenv
 import requests
 from telebot import types
 import base64
+<<<<<<< HEAD
+from servicios.solicitud_tutoria import mostrar_solicitud_tutoria, solicitar_tutoria, eliminar_solicitud_tutoria
+from servicios.solicitud_tutor import  mostrar_solicitud_tutor , crear_solicitud_tutor, eliminar_solicitud_tutor
+=======
 from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_solicitud_tutoria
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
 from servicios.usuario import usuarios
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
 from bson.objectid import ObjectId
@@ -38,9 +43,6 @@ def menu(message):
     # Verificar si el estudiante ha sido aprobado
     if estudiante["activo"] == 1:
         opciones = {
-            #"start": "/start",
-            #"aulas": "/aulas",
-            #"usuarios": "/usuarios",
             "Tutorias": {
                 "Ver tutorias disponibles": "/verTutoriasDisponibles",
                 "Ver tutorias activas": "/verTutoriasActivas",
@@ -60,6 +62,7 @@ def menu(message):
                 "Regresar": "back"
             },
             "Opciones de tutor": {
+                "Ver solicitudes de tutorias": "/verSolicitudesdeTutorias",
                 "Ver tutorias activas": "/verTutoriasActivas",
                 "Ver mi historial de tutorias impartidas": "/verHistorialTutoriasImpartidas",
                 "Regresar": "back"
@@ -99,11 +102,14 @@ def menu(message):
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
 
+<<<<<<< HEAD
+=======
 @bot.message_handler(commands=['usuarios'])
 def usuarios_command(message):
 # Invocar la función de solicitud de tutoría
     usuarios(message)
     
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
     solicitar_tutoria(message)
@@ -111,7 +117,6 @@ def solicitar_tutoria_command(message):
 @bot.message_handler(commands=['solicitudSerTutor'])
 def solicitar_tutor_command(message):
     crear_solicitud_tutor(message)
-
 
 @bot.message_handler(commands=['miSolicitudTutor'])
 def mostrar_solicitud_tutor_command(message):
@@ -149,6 +154,10 @@ def historial_tutorias_recibidas_command(message):
 
 
 #Formulario para Ingresar Estudiante
+<<<<<<< HEAD
+@bot.message_handler(commands=['solicitudEstudiante'])
+=======
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 def crear_solicitud_estudiante(message):
     try:
         # Inicializar el objeto de solicitud de tutoría
@@ -542,7 +551,10 @@ def handle_another_horario(message, clase_id, horarios_ids):
 
 
 bot.add_message_handler(start)
+<<<<<<< HEAD
+=======
 bot.add_message_handler(usuarios)
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 bot.add_message_handler(crear_solicitud_tutor)
 bot.add_message_handler(solicitar_tutoria)
 bot.add_message_handler(mostrar_solicitud_tutor)
@@ -554,4 +566,8 @@ bot.add_message_handler(obtenerTutoriasEstudianteEstudiante)
 bot.add_message_handler(crear_solicitud_estudiante)
 bot.add_message_handler(menu)
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 bot.infinity_polling()

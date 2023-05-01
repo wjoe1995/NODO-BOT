@@ -12,16 +12,12 @@ BOT_TOKEN = os.environ.get('TELEGRAM_API_KEY')
 bot = telebot.TeleBot(BOT_TOKEN)
 
 #/verHistorialTutoriasImpartidas
-def obtenerTutoriasEstudianteTutor(message,token):
+def obtenerTutoriasEstudianteTutor(message):
     try:
         End_Point = os.environ.get('API_URL')
         url = '{}tutoria/obtenerTutoriasEstudianteTutor'.format(End_Point)
-        headers = {
-            'Authorization': 'Bearer ' + token
-        }
         bot.reply_to(message, "Tutorias impartidas:")
-        print(token)
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, verify=False)
         data = response.json()
         tutoriasimpartidas_list = []
         for tutoria in data:
@@ -44,7 +40,7 @@ def obtenerTutoriasEstudianteTutor(message,token):
         bot.send_message(message.chat.id, "Error al obtener las tutorias ")
 
 #/verHistorialTutoriasRecibidas
-def obtenerTutoriasEstudianteEstudiante(message,token):
+def obtenerTutoriasEstudianteEstudiante(message):
     try:
         End_Point = os.environ.get('API_URL')
         url = '{}tutoria/obtenerTutoriasEstudianteEstudiante'.format(End_Point)
