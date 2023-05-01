@@ -8,7 +8,6 @@ from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_sol
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
-
 #from servicios.solicitud_estudiante import crear_solicitud_estudiante
 import re
 
@@ -97,7 +96,7 @@ def menu(message):
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
-    
+
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
     solicitar_tutoria(message)
@@ -143,6 +142,7 @@ def historial_tutorias_recibidas_command(message):
 
 
 #Formulario para Ingresar Estudiante
+@bot.message_handler(commands=['solicitudEstudiante'])
 def crear_solicitud_estudiante(message):
     try:
         # Inicializar el objeto de solicitud de tutoría
