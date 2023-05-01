@@ -177,7 +177,7 @@ def obtener_carrera(message, solicitud):
     carreras = response.json()
 
     # Crear un mensaje con la lista numerada de opciones
-    mensaje = "Por favor seleccione la carrera del estudiante:\n"
+    mensaje = "Por favor seleccione su carrera:\n"
     for i, carrera in enumerate(carreras):
         mensaje += f"{i + 1}. {carrera['nombre_carrera']}\n"
     bot.reply_to(message, mensaje)
@@ -197,7 +197,7 @@ def obtener_telefono(message, solicitud, carreras):
         return
 
     # Pedir al usuario el teléfono (opcional)
-    bot.reply_to(message, "Por favor ingrese el número de teléfono del estudiante (opcional).")
+    bot.reply_to(message, "Por favor ingrese su número de teléfono: Por ejemplo 8989-8989")
     bot.register_next_step_handler(message, lambda respuesta: obtener_id_telegram(respuesta, solicitud))
 def obtener_id_telegram(message, solicitud):
     # Guardar el teléfono en la solicitud (si se proporciona)
@@ -366,7 +366,7 @@ def handle_tutor_selection(message, clase_id, tutores):
                 response = requests.post(url, json=data, verify=False)
 
                 if response.status_code == 200:
-                    bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
+                    bot.reply_to(message, "¡Gracias por crear la solicitud! Porfavor revisa el estado de tu solicitud en /miSolicitudTutoria.")
                     bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
                 elif response.status_code == 400:
                     bot.reply_to(message, "¡Esta haciendo un registro que ya existe! Ya solicito esa clase antes")
@@ -562,7 +562,7 @@ def handle_another_horario(message, clase_id, horarios_ids):
             response = requests.post(url, json=data, verify=False)
 
             if response.status_code == 200:
-                bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
+                bot.reply_to(message, "¡Gracias por crear la solicitud! Porfavor revisa el estado de tu solicitud en /miSolicitudTutor")
                 bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
             elif response.status_code == 400:
                 bot.reply_to(message, "¡Esta haciendo un registro que ya existe! Ya solicito esa clase antes")
