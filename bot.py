@@ -4,10 +4,17 @@ from dotenv import load_dotenv
 import requests
 from telebot import types
 import base64
+<<<<<<< HEAD
 from servicios.solicitud_tutoria import mostrar_solicitud_tutoria, solicitar_tutoria, eliminar_solicitud_tutoria
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , crear_solicitud_tutor, eliminar_solicitud_tutor
+=======
+from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_solicitud_tutoria
+from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
+from servicios.usuario import usuarios
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
 from servicios.obtenerEstudiante import obtener_id_estudiante
+from bson.objectid import ObjectId
 #from servicios.solicitud_estudiante import crear_solicitud_estudiante
 import re
 
@@ -95,65 +102,47 @@ def menu(message):
 def start(message):
     bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
 
+<<<<<<< HEAD
+=======
+@bot.message_handler(commands=['usuarios'])
+def usuarios_command(message):
+# Invocar la función de solicitud de tutoría
+    usuarios(message)
+    
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
-    if auth_data['token'] is not None:
-        token = auth_data['token']
-        usuario = auth_data['usuario']
-        solicitar_tutoria(message,token)
-    else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+    solicitar_tutoria(message)
 
 @bot.message_handler(commands=['solicitudSerTutor'])
 def solicitar_tutor_command(message):
-    if auth_data['token'] is not None:
-        token = auth_data['token']
-        usuario = auth_data['usuario']
-        crear_solicitud_tutor(message,token)
-    else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+    crear_solicitud_tutor(message)
 
 @bot.message_handler(commands=['miSolicitudTutor'])
 def mostrar_solicitud_tutor_command(message):
-    if auth_data['token'] is not None:
-        token = auth_data['token']
-        usuario = auth_data['usuario']
-        mostrar_solicitud_tutor(message,token)
-    else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+    mostrar_solicitud_tutor(message)
 
 @bot.message_handler(commands=['miSolicitudTutoria'])
 def mostrar_solicitud_tutoria_command(message):
-    if auth_data['token'] is not None:
-        token = auth_data['token']
-        usuario = auth_data['usuario']
-        mostrar_solicitud_tutoria(message,token)
+    mostrar_solicitud_tutoria(message)
+
+@bot.message_handler(commands=['solicitudEstudiante']) 
+def mostrar_solicitud_tutoria_command(message):
+    url = f'https://localhost:8080/api/estudiantes/extraer/{message.chat.id}'
+    response = requests.get(url, verify=False)
+    if response.status_code != 200:
+        crear_solicitud_estudiante(message)
     else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+        bot.reply_to(message, "Ya hicistes la solicitud. Por favor, comunicate con VOAE, para que aprueben tu solicitud.")
 
-
-#@bot.message_handler(commands=['solicitudEstudiante']) 
-#def mostrar_solicitud_tutoria_command(message):
-#    crear_solicitud_estudiante(message)
 
 @bot.message_handler(commands=['eliminarSolicitudTutoria'])
 def eliminar_solicitud_tutoria_command(message):
-    if auth_data['token'] is not None:
-        token = auth_data['token']
-        usuario = auth_data['usuario']
-        # Invocar la función de solicitud de tutoría
-        eliminar_solicitud_tutoria(bot, message, token)
-    else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.')
+    eliminar_solicitud_tutoria(bot, message)
 
 @bot.message_handler(commands=['eliminarSolicitudTutor'])
 def eliminar_solicitud_tutor_command(message):
-    if auth_data['token'] is not None:
-        token = auth_data['token']
-        usuario = auth_data['usuario']
-        eliminar_solicitud_tutor(bot, message, token)
-    else:
-        bot.send_message(message.chat.id, 'Debe iniciar sesión primero.') 
+    eliminar_solicitud_tutor(bot, message)
 
 @bot.message_handler(commands=['verHistorialTutoriasImpartidas'])
 def historial_tutorias_impartidas_command(message):
@@ -165,7 +154,10 @@ def historial_tutorias_recibidas_command(message):
 
 
 #Formulario para Ingresar Estudiante
+<<<<<<< HEAD
 @bot.message_handler(commands=['solicitudEstudiante'])
+=======
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 def crear_solicitud_estudiante(message):
     try:
         # Inicializar el objeto de solicitud de tutoría
@@ -268,17 +260,15 @@ def enviar_solicitud(message, solicitud):
         bot.reply_to(message, "Ocurrió un error al crear la solicitud de estudiante.")
 
 #FORMULARIO TUTORIA
-def solicitar_tutoria(message, token):
+def solicitar_tutoria(message):
     try:
         # First, greet the user
         bot.reply_to(message, "Para crear una solicitud, ingresa los siguientes datos:")
 
         # Get the list of available classes
         url = 'https://localhost:8080/api/clases/'
-        headers = {
-            'Authorization': 'Bearer ' + token
-        }
-        response = requests.get(url, headers=headers, verify=False)
+        
+        response = requests.get(url,  verify=False)
         clases = response.json()
 
         # Display the list of classes to the user
@@ -289,12 +279,12 @@ def solicitar_tutoria(message, token):
             codigo_clase = clase['codigo_clase']
             bot.send_message(message.chat.id, f"{i}. Código de clase: {codigo_clase}\nNombre de la clase: {nombre_clase}")
 
-        bot.register_next_step_handler(message, handle_clasetu_selection, clases, token)
+        bot.register_next_step_handler(message, handle_clasetu_selection, clases)
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
     
     bot.reply_to(message, "Por favor, ingresa una clase atravez de su enumeración:(Por ejemplo 1)")
-def handle_clasetu_selection(message, clases,token):
+def handle_clasetu_selection(message, clases):
     try:
         reply = message.text.strip()
         i = int(reply)
@@ -306,10 +296,7 @@ def handle_clasetu_selection(message, clases,token):
 
             # Get the list of available tutors
             url = f'https://localhost:8080/api/solicitud_tutor/obtenerSolicitudTutorClase/{clase_id}'
-            headers = {
-            'Authorization': 'Bearer ' + token
-            }
-            response = requests.get(url, headers=headers, verify=False)
+            response = requests.get(url,  verify=False)
             tutores = response.json()
             text = message.text
 
@@ -329,21 +316,23 @@ def handle_clasetu_selection(message, clases,token):
                 bot.reply_to(message, "Estos son los tutores disponibles para la clase seleccionada:")
                 for i, tutor in enumerate(tutores, start=1):
                     nombre = tutor['estudiante']['nombre']
-                    horarios = tutor['horario_solicitado']['dia'] + " " + tutor['horario_solicitado']['hora']  
-                    bot.send_message(message.chat.id, f"{i}. Nombre: {nombre}\nHorarios de tutorías: {horarios}")
+                    horarios_disponibles = "\n ".join(f"{horario['dia']} {horario['hora']}" for horario in tutor['horario_solicitado'])
 
-            bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores, token)
+                    # Mostrar el nombre del tutor y sus horarios disponibles
+                    bot.send_message(message.chat.id, f"{i}. Nombre: {nombre}\nHorarios de tutorías: \n{horarios_disponibles}")
+                
+            bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores)
 
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_clasetu_selection, clases)
-def handle_tutor_selection(message, clase_id, tutores, token):
+def handle_tutor_selection(message, clase_id, tutores):
     try:
         reply = message.text.strip()
         i = int(reply)
         if i < 1 or i > len(tutores):
             bot.reply_to(message, f"Por favor, ingresa un número entre 1 al {len(tutores)}.")
-            bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores, token)
+            bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores)
         else:
             tutor_id = tutores[i-1]['estudiante']
             tutor_horario = tutores[i-1]['horario_solicitado']
@@ -351,16 +340,13 @@ def handle_tutor_selection(message, clase_id, tutores, token):
             estudiante_id = obtener_id_estudiante(id_telegram)
             # Create the tutorship request
             url = ' https://localhost:8080/api/solicitud_tutoria/crearSolicitudTutoria'
-            headers = {
-            'Authorization': 'Bearer ' + token
-            }
             data = {
                 'estudiante': estudiante_id,
                 'clase': clase_id,
                 'tutor': tutor_id,
                 'horario_solicitado': tutor_horario
             }
-            response = requests.post(url, json=data,headers=headers, verify=False)
+            response = requests.post(url, json=data, verify=False)
 
             if response.status_code == 200:
                 bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
@@ -369,37 +355,35 @@ def handle_tutor_selection(message, clase_id, tutores, token):
 
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
-        bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores, token)
+        bot.register_next_step_handler(message, handle_tutor_selection, clase_id, tutores)
 
 #FORMULARIO TUTOR
-def crear_solicitud_tutor(message,token):
+def crear_solicitud_tutor(message, ):
     try:
         # First, greet the user
         bot.reply_to(message, "Para crear una solicitud, ingresa los siguientes datos:")
 
         # Get the list of available classes
         url = 'https://localhost:8080/api/clases/'
-        headers = {
-            'Authorization': 'Bearer ' + token
-        }
-        response = requests.get(url, headers=headers, verify=False)
+
+        response = requests.get(url, verify=False)
         clases = response.json()
 
         # Display the list of classes to the user
         bot.reply_to(message, "Estas son las clases disponibles:")
         for i, clase in enumerate(clases, start=1):
-            id_clase  = clase['_id']
+            id_clase = clase['_id']
             nombre_clase = clase['nombre_clase']
             codigo_clase = clase['codigo_clase']
             bot.send_message(message.chat.id, f"{i}. Código de clase: {codigo_clase}\nNombre de la clase: {nombre_clase}")
 
-        bot.register_next_step_handler(message, handle_clase_selection, clases, token)
+        # Registramos el siguiente paso para manejar la selección de la clase por parte del usuario
+        bot.register_next_step_handler(message, handle_clase_selection, clases)
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-    
-    bot.reply_to(message, "Por favor, ingresa una clase atravez de su enumeración:(Por ejemplo 1)")
-def handle_clase_selection(message, clases, token):
+
+def handle_clase_selection(message, clases):
     try:
         reply = message.text.strip()
         i = int(reply)
@@ -407,64 +391,170 @@ def handle_clase_selection(message, clases, token):
             bot.reply_to(message, f"Por favor, ingresa un número entre 1 y {len(clases)}.")
             bot.register_next_step_handler(message, handle_clase_selection, clases)
         else:
-            clase_id = clases[i-1]['_id']
+            clase_id = clases[i - 1]['_id']
+            horarios_ids = []
 
-            # Get the list of available schedules
-            urlHo = 'https://localhost:8080/api/horario/obtenerHorarios'
-            headers = {
-            'Authorization': 'Bearer ' + token
-            }
-            response = requests.get(urlHo,headers=headers, verify=False)
-            horarios = response.json()
-            # Display the list of schedules to the user
-            bot.reply_to(message, "Estos son los horarios disponibles:")
-            for i, horario in enumerate(horarios, start=1):
-                id_horario = horario['_id']
-                dia = horario['dia']
-                hora = horario['hora']
-                bot.send_message(message.chat.id, f"{i}. Día: {dia}\nHora: {hora}")
-            bot.register_next_step_handler(message, handle_horario_selection, clase_id, horarios, token)
-            bot.reply_to(message, "Gracias ahora por favor, ingresa un horario a través de su enumeración: (Por ejemplo 1)")
+            # Llamamos a la función para mostrar los días disponibles para la clase seleccionada
+            mostrar_dias_disponibles(message, clase_id,horarios_ids)
 
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
-        bot.register_next_step_handler(message, handle_clase_selection, clases, token)
-def handle_horario_selection(message, clase_id, horarios,token):
+        bot.register_next_step_handler(message, handle_clase_selection, clases)
+
+def mostrar_dias_disponibles(message, clase_id,horarios_ids):
+    try:
+        # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
+        dias_semana = {
+            "1": "Lunes",
+            "2": "Martes",
+            "3": "Miércoles",
+            "4": "Jueves",
+            "5": "Viernes"
+        }
+
+        # Mostramos los días al usuario
+        dias_disponibles = "\n".join([f"{i}. {dia}" for i, dia in dias_semana.items()])
+        bot.reply_to(message, f"Los días disponibles son:\n{dias_disponibles}\n¿Cuál día deseas seleccionar?")
+
+        # Registramos el siguiente paso para manejar la selección del usuario
+        bot.register_next_step_handler(message, handle_day_selection, clase_id, dias_semana,horarios_ids)
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot")
+
+def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
+    try:
+        # Obtenemos el número de día seleccionado por el usuario
+        num_dia = message.text.strip()
+
+        # Verificamos si el número de día seleccionado es válido
+        if num_dia not in dias_semana:
+            bot.reply_to(message, "Selecciona un número de día válido.")
+            return
+
+        # Obtenemos el día correspondiente al número seleccionado
+        dia_elegido = dias_semana[num_dia]
+
+        # Llamamos a la función para mostrar los horarios disponibles para el día seleccionado
+        mostrar_horarios_disponibles(message, clase_id,dia_elegido,horarios_ids)
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot")
+
+def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
+    try:
+        # Llamamos a la API para obtener los horarios disponibles para el día seleccionado
+        url = f"https://localhost:8080/api/horario/dia/{dia_elegido}"
+        
+        response = requests.get(url, verify=False)
+        horarios = response.json()['horarios']
+
+        # Si hay horarios disponibles, los mostramos al usuario
+        if horarios:
+            horarios_disponibles = "\n".join([f"{i}. {horario['hora']}" for i, horario in enumerate(horarios, start=1)])
+            bot.reply_to(message, f"Los horarios disponibles para el día {dia_elegido} son:\n{horarios_disponibles}")
+            # Registramos el siguiente paso para manejar la selección de opciones del usuario
+            bot.reply_to(message, "Por favor, ingresa el número del horario que deseas seleccionar:")
+            bot.register_next_step_handler(message, handle_horario_selection, clase_id, horarios,horarios_ids)
+
+        # Si no hay horarios disponibles, lo indicamos al usuario
+        else:
+            bot.reply_to(message, f"No hay horarios disponibles para el día {dia_elegido}.")
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot AQUIIIIIIIII")
+
+def handle_horario_selection(message, clase_id, horarios,horarios_ids):
     try:
         reply = message.text.strip()
         i = int(reply)
         if i < 1 or i > len(horarios):
-            bot.reply_to(message, f"Por favor, ingresa un número entre 1 al {len(horarios)}.")
-            bot.register_next_step_handler(message, handle_horario_selection, clase_id, horarios,token)
+            bot.reply_to(message, f"Por favor, ingresa un número entre 1 y {len(horarios)}.")
+            bot.register_next_step_handler(message, handle_horario_selection, clase_id, horarios,horarios_ids)
         else:
-            horario_id = horarios[i-1]['_id']
-            bot.reply_to(message, "Horario seleccionado.")
+            horario_id = horarios[i - 1]['_id']
+            horarios_ids.append(horario_id)
+            print(horarios_ids)
+
+            reply_markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+            reply_markup.add(types.KeyboardButton("Sí"))
+            reply_markup.add(types.KeyboardButton("No"))
+            bot.reply_to(message, "¿Quieres agregar otro horario?", reply_markup=reply_markup)
+            bot.register_next_step_handler(message, handle_another_horario, clase_id, horarios_ids)
+
 
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
-        bot.register_next_step_handler(message, handle_horario_selection, clase_id, horarios,token)
-    
-    id_telegram = message.chat.id
-    estudiante_id = obtener_id_estudiante(id_telegram)
-        # Create the tutor request
-    url = 'https://localhost:8080/api/solicitud_tutor/crearSolicitudTutor'
-    headers = {
-            'Authorization': 'Bearer ' + token
-            }
-    data = {
-        'estudiante': estudiante_id,
-        'clase': clase_id,
-        'horario_solicitado': horario_id
-    }
-    response = requests.post(url, json=data,headers=headers, verify=False)
+        bot.register_next_step_handler(message, handle_horario_selection, clase_id, horarios,horarios_ids)
 
-    if response.status_code == 200:
-        bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
-    else:
-        bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
+
+    except Exception as e:
+        bot.reply_to(message, "Ocurrió un error al llamar al bot ACAAAAAAAAAAA")
+
+def handle_another_horario(message, clase_id, horarios_ids):
+    try:
+        reply = message.text.strip().lower()
+        if reply == "no":
+            # Create the tutor request
+            id_telegram = message.chat.id
+            estudiante_id = obtener_id_estudiante(id_telegram)
+            horarios_ids_str = [str(horario_id) for horario_id in horarios_ids]
+            url = 'https://localhost:8080/api/solicitud_tutor/crearSolicitudTutor'
+
+            data = {
+                'estudiante': estudiante_id,
+                'clase': clase_id,
+                'horario_solicitado': horarios_ids_str
+            }
+            response = requests.post(url, json=data, verify=False)
+
+            if response.status_code == 200:
+                bot.reply_to(message, "¡Gracias por crear la solicitud! Pronto nos pondremos en contacto contigo.")
+            else:
+                bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
+
+        elif reply == "sí":
+            # Ask the user for another horario ID
+            dias_semana = {
+            "1": "Lunes",
+            "2": "Martes",
+            "3": "Miércoles",
+            "4": "Jueves",
+            "5": "Viernes"
+            }
+
+            # Mostramos los días al usuario
+            dias_disponibles = "\n".join([f"{i}. {dia}" for i, dia in dias_semana.items()])
+            bot.reply_to(message, f"Los días disponibles son:\n{dias_disponibles}\n¿Cuál día deseas seleccionar?")
+
+            # Registramos el siguiente paso para manejar la selección del usuario
+            bot.register_next_step_handler(message, handle_day_selection, clase_id, dias_semana,horarios_ids)
+
+        else:
+            bot.reply_to(message, "Por favor, ingresa una respuesta válida.")
+    except ValueError:
+        dias_semana = {
+            "1": "Lunes",
+            "2": "Martes",
+            "3": "Miércoles",
+            "4": "Jueves",
+            "5": "Viernes"
+            }
+
+        # Mostramos los días al usuario
+        dias_disponibles = "\n".join([f"{i}. {dia}" for i, dia in dias_semana.items()])
+        bot.reply_to(message, f"Los días disponibles son:\n{dias_disponibles}\n¿Cuál día deseas seleccionar?")
+
+        # Registramos el siguiente paso para manejar la selección del usuario
+        bot.register_next_step_handler(message, handle_day_selection, clase_id, dias_semana,horarios_ids)
+
 
 
 bot.add_message_handler(start)
+<<<<<<< HEAD
+=======
+bot.add_message_handler(usuarios)
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 bot.add_message_handler(crear_solicitud_tutor)
 bot.add_message_handler(solicitar_tutoria)
 bot.add_message_handler(mostrar_solicitud_tutor)
@@ -476,5 +566,8 @@ bot.add_message_handler(obtenerTutoriasEstudianteEstudiante)
 bot.add_message_handler(crear_solicitud_estudiante)
 bot.add_message_handler(menu)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7246a0cc4cf40b25bdc92ad053e15df866837e7d
 bot.infinity_polling()
