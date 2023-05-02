@@ -29,7 +29,7 @@ def menu(message):
     response = requests.get(url, verify=False)
 
     if response.status_code != 200:
-        bot.reply_to(message, "REGISTRATE  haciendo click en: /solicitudEstudiante")
+        bot.reply_to(message, "REGÍSTRATE  haciendo click en: /solicitudEstudiante")
         return
     estudiante = response.json()
 
@@ -60,7 +60,7 @@ def menu(message):
                 }, 
         }
     else:
-        bot.reply_to(message, "Comunicate con el administrador para que aprueb tu solicitud")
+        bot.reply_to(message, "Comunícate con el administrador para que apruebe tu solicitud")
 
     menu_interactivo(message.chat.id, opciones.keys())
     bot.register_next_step_handler(message, lambda m: seleccionar_opcion(m, opciones))
@@ -117,7 +117,7 @@ def mostrar_solicitud_tutoria_command(message):
     if response.status_code != 200:
         crear_solicitud_estudiante(message)
     else:
-        bot.reply_to(message, "Ya hicistes la solicitud. Por favor, comunicate con VOAE, para que aprueben tu solicitud.")
+        bot.reply_to(message, "Ya hiciste la solicitud. Por favor, comunícate con VOAE para que aprueben tu solicitud.")
 
 @bot.message_handler(commands=['eliminarSolicitudTutoria'])
 def eliminar_solicitud_tutoria_command(message):
@@ -294,7 +294,7 @@ def solicitar_tutoria(message, carrera_elegida):
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
     
-    bot.reply_to(message, "Por favor, ingresa una clase atravez de su enumeración:(Por ejemplo 1)")
+    bot.reply_to(message, "Por favor, ingresa una clase a través de su enumeración: (Por ejemplo 1)")
 def handle_clasetu_selection(message, clases):
     try:
         reply = message.text.strip()
@@ -352,8 +352,9 @@ def handle_tutor_selection(message, clase_id, tutores):
             print(tutor_id)
             print(estudiante_id)
             if estudiante_id == tutor_id:
-                    bot.reply_to(message, f"Esta intentando crear una tutoria con datos erroneos.")  
-                    bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
+                bot.reply_to(message, "Está intentando crear una tutoría con datos erróneos.")  
+                bot.reply_to(message, "Regrese al menú haciendo clic en /menu.")
+
             else:
                 # Create the tutorship request
                 url = ' https://localhost:8080/api/solicitud_tutoria/crearSolicitudTutoria'
@@ -367,13 +368,13 @@ def handle_tutor_selection(message, clase_id, tutores):
 
                 if response.status_code == 200:
                     bot.reply_to(message, "¡Gracias por crear la solicitud! Porfavor revisa el estado de tu solicitud en /miSolicitudTutoria.")
-                    bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
+                    bot.reply_to(message, f"Regrese al menú haciendo clic en /menu ") 
                 elif response.status_code == 400:
-                    bot.reply_to(message, "¡Esta haciendo un registro que ya existe! Ya solicito esa clase antes")
-                    bot.reply_to(message, "Regrese al menú haciendo click en /menu y revise el estado de su solicitud")
+                    bot.reply_to(message, "¡Está haciendo un registro que ya existe! Ya solicitó esa clase antes.")
+                    bot.reply_to(message, "Regrese al menú haciendo clic en /menu y revise el estado de su solicitud.")
                 else:
                     bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
-                    bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
+                    bot.reply_to(message, f"Regrese al menú haciendo clic en /menu. ") 
 
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
@@ -518,7 +519,7 @@ def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
             bot.reply_to(message, f"No hay horarios disponibles para el día {dia_elegido}.")
 
     except Exception as e:
-        bot.reply_to(message, "Ocurrió un error al llamar al bot AQUIIIIIIIII")
+        bot.reply_to(message, "Ocurrió un error al llamar al bot.")
 def handle_horario_selection(message, clase_id, horarios,horarios_ids):
     try:
         reply = message.text.strip()
@@ -564,13 +565,13 @@ def handle_another_horario(message, clase_id, horarios_ids):
 
             if response.status_code == 200:
                 bot.reply_to(message, "¡Gracias por crear la solicitud! Porfavor revisa el estado de tu solicitud en /miSolicitudTutor")
-                bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
+                bot.reply_to(message, f"Regrese al menú haciendo clic en /menu ") 
             elif response.status_code == 400:
-                bot.reply_to(message, "¡Esta haciendo un registro que ya existe! Ya solicito esa clase antes")
-                bot.reply_to(message, "Regrese al menú haciendo click en /menu y revise el estado de su solicitud")
+                bot.reply_to(message, "¡Está haciendo un registro que ya existe! Ya solicitó esa clase antes.")
+                bot.reply_to(message, "Regrese al menú haciendo clic en /menu y revise el estado de su solicitud")
             else:
                 bot.reply_to(message, "Ocurrió un error al crear la solicitud. Por favor, intenta de nuevo.")
-                bot.reply_to(message, f"Regrese al menú haciendo click en /menu ") 
+                bot.reply_to(message, f"Regrese al menú haciendo clic en /menu ") 
 
         elif reply == "sí":
             # Ask the user for another horario ID

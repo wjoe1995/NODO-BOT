@@ -35,7 +35,7 @@ def obtenerTutoriasEstudianteTutor(message):
                 })
             for tutoria_data in tutoriasimpartidas_list:
                 numerocuenta = tutoria_data['numerocuenta']            
-                bot.send_message(message.chat.id, f"Numero de cuenta: {numerocuenta}\nNombre del tutor: {tutoria_data['nombretutor']}\nMateria: {tutoria_data['materia']}\nCodigo de la materia: {tutoria_data['codigomateria']}\nActiva: {tutoria_data['active']}")
+                bot.send_message(message.chat.id, f"Número de cuenta: {numerocuenta}\nNombre del tutor: {tutoria_data['nombretutor']}\nMateria: {tutoria_data['materia']}\Código de la materia: {tutoria_data['codigomateria']}\nActiva: {tutoria_data['active']}")
         elif(response.status_code == 404):
             bot.send_message(message.chat.id, "Usted es un estudiante, por lo tanto no tiene tutorias impartidas")
     except Exception as e:
@@ -78,6 +78,8 @@ def obtenerTutoriasEstudianteEstudiante(message):
                 bot.send_message(message.chat.id, f"Numero de cuenta: {numerocuenta}\nNombre del Estudiante: {tutoria_data['nombreestudiante']}\nMateria: {tutoria_data['materia']}\nCodigo de la materia: {tutoria_data['codigomateria']}\nNombre del Tutor: {tutoria_data['nombretutor']}\nNumero de cuenta del Tutor: {tutoria_data['numerocuentatutor']}\nDía: {tutoria_data['dia']}\nHora: {tutoria_data['hora']}\nAula: {tutoria_data['aula']}\nActiva: {tutoria_data['active']}")
         elif(response.status_code == 404):
             bot.send_message(message.chat.id, "Usted es un tutor, por lo tanto no tiene tutorias recibidas")
+        elif(response.status_code == 404):
+            bot.send_message(message.chat.id, "Usted es un tutor, por lo tanto no tiene tutorias recibidas")
     except Exception as e:
         bot.send_message(message.chat.id, "Error al obtener las tutorias")
 
@@ -112,6 +114,6 @@ def obtenerTutoriasDisponibles(message):
                 'telefono_tutor': telefono_tutor
             })
         for tutoria_data in tutoriasdisponibles_list:
-            bot.send_message(message.chat.id, f"Aula: {tutoria_data['aula']}\nNombre de la Clase: {tutoria_data['nombre_clase']}\nCodigo de la Clase: {tutoria_data['codigo_clase']}\nNombre de la Carrera: {tutoria_data['nombre_carrera_clase']}\nDia Disponible: {tutoria_data['dia_solicitado']}\nHora Disponible: {tutoria_data['hora_solicitada']}\nNombre del Tutor: {tutoria_data['nombre_tutor']}\nNumero de cuenta del Tutor: {tutoria_data['numero_cuenta_tutor']}\nCarrera del Tutor: {tutoria_data['carrera_tutor']}\nTelefono del Tutor: {tutoria_data['telefono_tutor']}\n")
+            bot.send_message(message.chat.id, f"Aula: {tutoria_data['aula']}\nNombre de la Clase: {tutoria_data['nombre_clase']}\nCódigo de la Clase: {tutoria_data['codigo_clase']}\nNombre de la Carrera: {tutoria_data['nombre_carrera_clase']}\nDía Disponible: {tutoria_data['dia_solicitado']}\nHora Disponible: {tutoria_data['hora_solicitada']}\nNombre del Tutor: {tutoria_data['nombre_tutor']}\nNúmero de cuenta del Tutor: {tutoria_data['numero_cuenta_tutor']}\nCarrera del Tutor: {tutoria_data['carrera_tutor']}\nTeléfono del Tutor: {tutoria_data['telefono_tutor']}\n")
     elif(response.status_code == 404):
         bot.send_message(message.chat.id, "No hay tutorias disponibles")
