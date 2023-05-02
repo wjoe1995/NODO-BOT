@@ -14,7 +14,6 @@ bot = telebot.TeleBot(BOT_TOKEN)
 #/verHistorialTutoriasImpartidas
 def obtenerTutoriasEstudianteTutor(message):
     try:
-        End_Point = os.environ.get('API_URL')
         url = f'https://localhost:8080/api/tutoria/obtenerTutoriasEstudianteTutor/{message.chat.id}'
         bot.reply_to(message, "Tutorias impartidas:")
         response = requests.get(url, verify=False)
@@ -45,7 +44,6 @@ def obtenerTutoriasEstudianteTutor(message):
 #/verHistorialTutoriasRecibidasdef obtenerTutoriasEstudianteEstudiante(message):
 def obtenerTutoriasEstudianteEstudiante(message):
     try:
-        End_Point = os.environ.get('API_URL')
         url = f'https://localhost:8080/api/tutoria/obtenerTutoriasEstudianteEstudiante/{message.chat.id}'
         bot.reply_to(message, "Tutorias recibidas:")
         response = requests.get(url, verify=False)
@@ -82,3 +80,38 @@ def obtenerTutoriasEstudianteEstudiante(message):
             bot.send_message(message.chat.id, "Usted es un tutor, por lo tanto no tiene tutorias recibidas")
     except Exception as e:
         bot.send_message(message.chat.id, "Error al obtener las tutorias")
+
+def obtenerTutoriasDisponibles(message):
+    url = f'https://localhost:8080/api/tutoria/obtenerTutoriasDisponibles'
+    bot.reply_to(message, "Tutorias Disponibles:")
+    response = requests.get(url, verify=False)
+    data = response.json()
+    tutoriasdisponibles_list = []
+    if(response.status_code == 200):
+        for tutoria in data:
+            aula = tutoria['aula']['numero']
+            nombre_clase = tutoria['solicitud_tutoria']['clase']['nombre_clase']
+            codigo_clase = tutoria['solicitud_tutoria']['clase']['codigo_clase']
+            nombre_carrera_clase = tutoria['solicitud_tutoria']['clase']['carrera']['nombre_carrera']
+            dia_solicitado = tutoria['solicitud_tutoria']['horario_solicitado'][0]['dia']
+            hora_solicitada = tutoria['solicitud_tutoria']['horario_solicitado'][0]['hora']
+            nombre_tutor = tutoria['solicitud_tutoria']['tutor']['nombre']
+            numero_cuenta_tutor = tutoria['solicitud_tutoria']['tutor']['numero_cuenta']
+            carrera_tutor = tutoria['solicitud_tutoria']['tutor']['carrera']['nombre_carrera']
+            telefono_tutor = tutoria['solicitud_tutoria']['tutor']['telefono']
+            tutoriasdisponibles_list.append({
+                'aula': aula,
+                'nombre_clase': nombre_clase,
+                'codigo_clase': codigo_clase,
+                'nombre_carrera_clase': nombre_carrera_clase,
+                'dia_solicitado': dia_solicitado,
+                'hora_solicitada': hora_solicitada,
+                'nombre_tutor': nombre_tutor,
+                'numero_cuenta_tutor': numero_cuenta_tutor,
+                'carrera_tutor': carrera_tutor,
+                'telefono_tutor': telefono_tutor
+            })
+        for tutoria_data in tutoriasdisponibles_list:
+            bot.send_message(message.chat.id, f"Aula: {tutoria_data['aula']}\nNombre de la Clase: {tutoria_data['nombre_clase']}\nCodigo de la Clase: {tutoria_data['codigo_clase']}\nNombre de la Carrera: {tutoria_data['nombre_carrera_clase']}\nDia Disponible: {tutoria_data['dia_solicitado']}\nHora Disponible: {tutoria_data['hora_solicitada']}\nNombre del Tutor: {tutoria_data['nombre_tutor']}\nNumero de cuenta del Tutor: {tutoria_data['numero_cuenta_tutor']}\nCarrera del Tutor: {tutoria_data['carrera_tutor']}\nTelefono del Tutor: {tutoria_data['telefono_tutor']}\n")
+    elif(response.status_code == 404):
+        bot.send_message(message.chat.id, "No hay tutorias disponibles")

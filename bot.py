@@ -6,7 +6,7 @@ from telebot import types
 import base64
 from servicios.solicitud_tutoria import mostrar_solicitud_tutoria,  eliminar_solicitud_tutoria
 from servicios.solicitud_tutor import  mostrar_solicitud_tutor , eliminar_solicitud_tutor
-from servicios.tutorias import obtenerTutoriasEstudianteTutor, obtenerTutoriasEstudianteEstudiante
+from servicios.tutorias import *
 from servicios.obtenerEstudiante import obtener_id_estudiante
 #from servicios.solicitud_estudiante import crear_solicitud_estudiante
 import re
@@ -36,12 +36,8 @@ def menu(message):
     # Verificar si el estudiante ha sido aprobado
     if estudiante["activo"] == 1:
         opciones = {
-            #"start": "/start",
-            #"aulas": "/aulas",
-            #"usuarios": "/usuarios",
             "Tutorias": {
                 "Ver tutorias disponibles": "/verTutoriasDisponibles",
-                "Ver tutorias activas": "/verTutoriasActivas",
                 "Ver mi historial de tutorias recibidas": "/verHistorialTutoriasRecibidas",
                 "Regresar": "back"
             },
@@ -93,9 +89,10 @@ def menu(message):
                     bot.send_message(message.chat.id, f"Error al ejecutar el comando: {str(e)}")
         else:
             bot.send_message(message.chat.id, "Opción inválida")
+
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, "Hola, soy un bot de Telegram. ¿En qué te puedo ayudar?")
+    bot.reply_to(message, "¡Bienvenido al Bot de Tutorías de UNAH-CURLP!\n\nSoy tu asistente virtual para ayudarte con todas tus consultas y solicitudes relacionadas con tutorías.\n\nAquí puedes encontrar tutorías disponibles, solicitar asesoramiento académico y obtener ayuda personalizada de nuestros tutores expertos.\n\nPara comenzar, te recomendamos usar el comando /menu para acceder al menú principal y explorar todas las opciones disponibles. Desde allí, podrás encontrar tutorías, realizar consultas y obtener más información sobre nuestros servicios.\n\nSi tienes alguna pregunta o necesitas asistencia, no dudes en escribirme. Estoy aquí para ayudarte en tu camino hacia el éxito académico.\n\n¡Comencemos y aprovechemos al máximo las tutorías en nuestra universidad!\n\nSaludos,\nEquipo de Tutorías UNAH-CURLP")
 
 @bot.message_handler(commands=['solicitarTutoria'])
 def solicitar_tutoria_command(message):
@@ -139,6 +136,9 @@ def historial_tutorias_impartidas_command(message):
 def historial_tutorias_recibidas_command(message):
     obtenerTutoriasEstudianteEstudiante(message)
 
+@bot.message_handler(commands=['verTutoriasDisponibles'])
+def ver_tutorias_disponibles_command(message):
+    obtenerTutoriasDisponibles(message)
 
 #Formulario para Ingresar Estudiante
 def crear_solicitud_estudiante(message):
@@ -251,7 +251,6 @@ def mostrar_carrera_disponibles(message):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_tuto_selection(message, carreras):
     try:
         # Obtenemos el número de carrera seleccionado por el usuario
@@ -270,7 +269,6 @@ def handle_tuto_selection(message, carreras):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def solicitar_tutoria(message, carrera_elegida):
     try:
         # First, greet the user
@@ -396,7 +394,6 @@ def mostrar_carreras_disponibles(message):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
-
 def handle_y_selection(message, carreras):
     try:
         # Obtenemos el número de carrera seleccionado por el usuario
@@ -543,7 +540,6 @@ def handle_horario_selection(message, clase_id, horarios,horarios_ids):
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot ACAAAAAAAAAAA")
-
 def handle_another_horario(message, clase_id, horarios_ids):
     try:
         reply = message.text.strip().lower()
