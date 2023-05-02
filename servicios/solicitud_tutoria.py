@@ -80,7 +80,7 @@ def handle_solicitudtu_selection(message, solicitudes):
             response = requests.delete(url, verify=False)
 
             if response.status_code == 200:
-                bot.reply_to(message, "¡Gracias por eliminar la solicitud! Pronto nos pondremos en contacto contigo.")
+                bot.reply_to(message, "¡Solicitud Eliminada Exitosamente!.")            
             else:
                 bot.reply_to(message, "Ocurrió un error al eliminar la solicitud. Por favor, intenta de nuevo.")
     

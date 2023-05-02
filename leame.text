@@ -2,17 +2,24 @@
 Buscarlo como "CURLP-BOT"
 Nombre del Bot en telegram "NODO-BOT"
 
+instalar virtualenv
+pip install virtualenv
+
+crear el entorno virtual
+virtualenv env
+
 iniciar el entorno virtual desde windows
 .\env\Scripts\activate 
 
 para salir del entorno virtual escribir en consolo 
 "deactivate"
 
+para instalar requeriments.txt en caso de ser necesario
+pip install -r requirements.txt
+
 crear el archivo de dependencias
 pip freeze > requirements.txt
 
-para instalar requeriments.txt en caso de ser necesario
-pip install -r requirements.txt
 '''
 
 
