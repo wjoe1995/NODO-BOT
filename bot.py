@@ -54,7 +54,7 @@ def menu(message):
                 "Regresar": "back"
             },
             "Opciones de tutor": {
-                "Ver tutorias activas": "/verTutoriasActivas",
+                #"Ver tutorias activas": "/verTutoriasActivas", se deja fuera por el motivo que con el moando de abajo se puede ver las tutorias activas y las inactivas
                 "Ver mi historial de tutorias impartidas": "/verHistorialTutoriasImpartidas",
                 "Regresar": "back"
                 }, 
@@ -101,7 +101,6 @@ def solicitar_tutoria_command(message):
 @bot.message_handler(commands=['solicitudSerTutor'])
 def solicitar_tutor_command(message):
     mostrar_carreras_disponibles(message)
-
 
 @bot.message_handler(commands=['miSolicitudTutor'])
 def mostrar_solicitud_tutor_command(message):
@@ -240,7 +239,10 @@ def mostrar_carrera_disponibles(message):
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
         carreras = {
             "1": "Ingeniería en Sistemas",
-            "2": "Administración de Empresas",
+            "2": "Ingeniería Agroindustrial",
+            "3": "Ingeniería Ciencias Acuícolas y Recurso Marino Costero",
+            "4": "Licenciatura en Comercio Internacional",
+            "5": "Licenciatura en Administración de Empresas"
                 }
         # Mostramos los días al usuario
         carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
@@ -383,7 +385,10 @@ def mostrar_carreras_disponibles(message):
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
         carreras = {
             "1": "Ingeniería en Sistemas",
-            "2": "Administración de Empresas",
+            "2": "Ingeniería Agroindustrial",
+            "3": "Ingeniería Ciencias Acuícolas y Recurso Marino Costero",
+            "4": "Licenciatura en Comercio Internacional",
+            "5": "Licenciatura en Administración de Empresas"
                 }
         # Mostramos los días al usuario
         carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
