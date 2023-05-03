@@ -54,7 +54,7 @@ def menu(message):
                 "Regresar": "back"
             },
             "Opciones de tutor": {
-                "Ver tutorias activas": "/verTutoriasActivas",
+                #"Ver tutorias activas": "/verTutoriasActivas", se deja fuera por el motivo que con el moando de abajo se puede ver las tutorias activas y las inactivas
                 "Ver mi historial de tutorias impartidas": "/verHistorialTutoriasImpartidas",
                 "Regresar": "back"
                 }, 
@@ -101,7 +101,6 @@ def solicitar_tutoria_command(message):
 @bot.message_handler(commands=['solicitudSerTutor'])
 def solicitar_tutor_command(message):
     mostrar_carreras_disponibles(message)
-
 
 @bot.message_handler(commands=['miSolicitudTutor'])
 def mostrar_solicitud_tutor_command(message):
