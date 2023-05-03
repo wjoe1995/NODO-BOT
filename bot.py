@@ -239,7 +239,10 @@ def mostrar_carrera_disponibles(message):
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
         carreras = {
             "1": "Ingeniería en Sistemas",
-            "2": "Administración de Empresas",
+            "2": "Ingeniería Agroindustrial",
+            "3": "Ingeniería Ciencias Acuícolas y Recurso Marino Costero",
+            "4": "Licenciatura en Comercio Internacional",
+            "5": "Licenciatura en Administración de Empresas"
                 }
         # Mostramos los días al usuario
         carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
@@ -382,7 +385,10 @@ def mostrar_carreras_disponibles(message):
         # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
         carreras = {
             "1": "Ingeniería en Sistemas",
-            "2": "Administración de Empresas",
+            "2": "Ingeniería Agroindustrial",
+            "3": "Ingeniería Ciencias Acuícolas y Recurso Marino Costero",
+            "4": "Licenciatura en Comercio Internacional",
+            "5": "Licenciatura en Administración de Empresas"
                 }
         # Mostramos los días al usuario
         carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
