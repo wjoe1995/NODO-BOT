@@ -236,27 +236,38 @@ def enviar_solicitud(message, solicitud):
 #FORMULARIO TUTORIA
 def mostrar_carrera_disponibles(message):
     try:
-        # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
-        carreras = {
-            "1": "Ingeniería en Sistemas",
-            "2": "Ingeniería Agroindustrial",
-            "3": "Ingeniería Ciencias Acuícolas y Recurso Marino Costero",
-            "4": "Licenciatura en Comercio Internacional",
-            "5": "Licenciatura en Administración de Empresas"
-                }
-        # Mostramos los días al usuario
+        # Realizamos una solicitud GET a la URL de la API para obtener las carreras disponibles
+        response = requests.get("https://localhost:8080/api/carreras/obtenerCarreras", verify=False)
+
+        # Imprimimos el estado de la respuesta de la API
+        print(f"Estado de la respuesta de la API: {response.status_code}")
+
+        # Verificamos si la solicitud fue exitosa
+        if response.status_code != 200:
+            bot.reply_to(message, "No se pudo obtener la lista de carreras.")
+            return
+
+        # Procesamos la respuesta en formato JSON para construir el diccionario de carreras
+        carreras = {}
+        for i, carrera in enumerate(response.json()):
+            carreras[str(i+1)] = carrera["nombre_carrera"]
+
+        # Mostramos las carreras al usuario
         carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
-        bot.reply_to(message, f"Las Carreras disponibles son:\n{carrer}\n¿Cuál día deseas seleccionar?")
+        bot.reply_to(message, f"Las carreras disponibles son:\n{carrer}\n¿Cuál carrera deseas seleccionar?")
 
         # Registramos el siguiente paso para manejar la selección del usuario
         bot.register_next_step_handler(message, handle_tuto_selection, carreras)
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
+        print(e)
 def handle_tuto_selection(message, carreras):
     try:
+        print(carreras)
         # Obtenemos el número de carrera seleccionado por el usuario
         num_carrera = message.text.strip()
+        print(num_carrera)
 
         # Verificamos si el número de carrera seleccionado es válido
         if num_carrera not in carreras:
@@ -265,6 +276,7 @@ def handle_tuto_selection(message, carreras):
 
         # Obtenemos la carrera correspondiente al número seleccionado
         carrera_elegida = carreras[num_carrera]
+        print(carrera_elegida)
 
         # Llamamos a la función para mostrar las clases disponibles para la carrera seleccionada
         solicitar_tutoria(message, carrera_elegida)
@@ -383,28 +395,38 @@ def handle_tutor_selection(message, clase_id, tutores):
 #FORMULARIO TUTOR
 def mostrar_carreras_disponibles(message):
     try:
-        # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
-        carreras = {
-            "1": "Ingeniería en Sistemas",
-            "2": "Ingeniería Agroindustrial",
-            "3": "Ingeniería Ciencias Acuícolas y Recurso Marino Costero",
-            "4": "Licenciatura en Comercio Internacional",
-            "5": "Licenciatura en Administración de Empresas"
-                }
-        # Mostramos los días al usuario
+        # Realizamos una solicitud GET a la URL de la API para obtener las carreras disponibles
+        response = requests.get("https://localhost:8080/api/carreras/obtenerCarreras", verify=False)
+
+        # Imprimimos el estado de la respuesta de la API
+        print(f"Estado de la respuesta de la API: {response.status_code}")
+
+        # Verificamos si la solicitud fue exitosa
+        if response.status_code != 200:
+            bot.reply_to(message, "No se pudo obtener la lista de carreras.")
+            return
+
+        # Procesamos la respuesta en formato JSON para construir el diccionario de carreras
+        carreras = {}
+        for i, carrera in enumerate(response.json()):
+            carreras[str(i+1)] = carrera["nombre_carrera"]
+
+        # Mostramos las carreras al usuario
         carrer = "\n".join([f"{i}. {carrera}" for i, carrera in carreras.items()])
-        bot.reply_to(message, f"Las Carreras disponibles son:\n{carrer}\n¿Cuál día deseas seleccionar?")
+        bot.reply_to(message, f"Las carreras disponibles son:\n{carrer}\n¿Cuál carrera deseas seleccionar?")
 
         # Registramos el siguiente paso para manejar la selección del usuario
         bot.register_next_step_handler(message, handle_y_selection, carreras)
 
     except Exception as e:
         bot.reply_to(message, "Ocurrió un error al llamar al bot")
+        print(e)
 def handle_y_selection(message, carreras):
     try:
+        print(carreras)
         # Obtenemos el número de carrera seleccionado por el usuario
         num_carrera = message.text.strip()
-
+        print(num_carrera)
         # Verificamos si el número de carrera seleccionado es válido
         if num_carrera not in carreras:
             bot.reply_to(message, "Selecciona un número de carrera válido.")
@@ -460,44 +482,52 @@ def handle_clase_selection(message, clases):
     except ValueError:
         bot.reply_to(message, "Por favor, ingresa un número válido.")
         bot.register_next_step_handler(message, handle_clase_selection, clases)
-def mostrar_dias_disponibles(message, clase_id,horarios_ids):
+def mostrar_dias_disponibles(message, clase_id, horarios_ids):
     try:
-        # Creamos un diccionario que relacione cada número con su correspondiente día de la semana
-        dias_semana = {
-            "1": "Lunes",
-            "2": "Martes",
-            "3": "Miércoles",
-            "4": "Jueves",
-            "5": "Viernes"
-        }
+        # Realizamos una solicitud GET a la URL de la API para obtener los días disponibles
+        response = requests.get("https://localhost:8080/api/horario/obtenerDias", verify=False)
 
-        # Mostramos los días al usuario
-        dias_disponibles = "\n".join([f"{i}. {dia}" for i, dia in dias_semana.items()])
-        bot.reply_to(message, f"Los días disponibles son:\n{dias_disponibles}\n¿Cuál día deseas seleccionar?")
+        # Imprimimos el estado de la respuesta de la API
+        print(f"Estado de la respuesta de la API: {response.status_code}")
+
+        # Verificamos si la solicitud fue exitosa
+        if response.status_code != 200:
+            bot.reply_to(message, "No se pudo obtener la lista de días.")
+            return
+
+        # Procesamos la respuesta en formato JSON para construir la lista de días
+        dias = []
+        for dia in response.json()['dias']:
+            dias.append({'dia': dia})
+
+        # Mostramos las opciones al usuario
+        opciones = "\n".join([f"{i+1}. {dia['dia']}" for i, dia in enumerate(dias)])
+        bot.reply_to(message, f"Los días disponibles son:\n{opciones}\n¿Cuál día deseas seleccionar?")
 
         # Registramos el siguiente paso para manejar la selección del usuario
-        bot.register_next_step_handler(message, handle_day_selection, clase_id, dias_semana,horarios_ids)
+        bot.register_next_step_handler(message, handle_day_selection, clase_id, dias, horarios_ids)
 
     except Exception as e:
-        bot.reply_to(message, "Ocurrió un error al llamar al bot")
-def handle_day_selection(message, clase_id,dias_semana,horarios_ids):
+        bot.reply_to(message, "Ocurrió un error al llamar al bot.")
+def handle_day_selection(message, clase_id, dias, horarios_ids):
     try:
         # Obtenemos el número de día seleccionado por el usuario
-        num_dia = message.text.strip()
+        num_dia = int(message.text.strip())
 
         # Verificamos si el número de día seleccionado es válido
-        if num_dia not in dias_semana:
+        if num_dia < 1 or num_dia > len(dias):
             bot.reply_to(message, "Selecciona un número de día válido.")
             return
 
         # Obtenemos el día correspondiente al número seleccionado
-        dia_elegido = dias_semana[num_dia]
+        dia_elegido = dias[num_dia-1]['dia']
 
         # Llamamos a la función para mostrar los horarios disponibles para el día seleccionado
-        mostrar_horarios_disponibles(message, clase_id,dia_elegido,horarios_ids)
+        mostrar_horarios_disponibles(message, clase_id, dia_elegido, horarios_ids)
 
     except Exception as e:
-        bot.reply_to(message, "Ocurrió un error al llamar al bot")
+        bot.reply_to(message, "Ocurrió un error al llamar al bot.")
+
 def mostrar_horarios_disponibles(message, clase_id, dia_elegido,horarios_ids):
     try:
         # Llamamos a la API para obtener los horarios disponibles para el día seleccionado
@@ -574,43 +604,15 @@ def handle_another_horario(message, clase_id, horarios_ids):
                 bot.reply_to(message, f"Regrese al menú haciendo clic en /menu ") 
 
         elif reply == "sí":
-            # Ask the user for another horario ID
-            dias_semana = {
-            "1": "Lunes",
-            "2": "Martes",
-            "3": "Miércoles",
-            "4": "Jueves",
-            "5": "Viernes"
-            }
-
-            # Mostramos los días al usuario
-            dias_disponibles = "\n".join([f"{i}. {dia}" for i, dia in dias_semana.items()])
-            bot.reply_to(message, f"Los días disponibles son:\n{dias_disponibles}\n¿Cuál día deseas seleccionar?")
-
-            # Registramos el siguiente paso para manejar la selección del usuario
-            bot.register_next_step_handler(message, handle_day_selection, clase_id, dias_semana,horarios_ids)
+            mostrar_dias_disponibles(message, clase_id,horarios_ids)
 
         else:
             bot.reply_to(message, "Por favor, ingresa una respuesta válida.")
     except ValueError:
-        dias_semana = {
-            "1": "Lunes",
-            "2": "Martes",
-            "3": "Miércoles",
-            "4": "Jueves",
-            "5": "Viernes"
-            }
-
-        # Mostramos los días al usuario
-        dias_disponibles = "\n".join([f"{i}. {dia}" for i, dia in dias_semana.items()])
-        bot.reply_to(message, f"Los días disponibles son:\n{dias_disponibles}\n¿Cuál día deseas seleccionar?")
-
-        # Registramos el siguiente paso para manejar la selección del usuario
-        bot.register_next_step_handler(message, handle_day_selection, clase_id, dias_semana,horarios_ids)
-
+        bot.reply_to(message, "Error al querer seleccionar otro horario")
 
 bot.add_message_handler(start)
-bot.add_message_handler(crear_solicitud_tutor)
+bot.add_message_handler(mostrar_carreras_disponibles)
 bot.add_message_handler(solicitar_tutoria)
 bot.add_message_handler(mostrar_solicitud_tutor)
 bot.add_message_handler(mostrar_solicitud_tutoria)
