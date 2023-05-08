@@ -17,6 +17,8 @@ def mostrar_solicitud_tutor(message):
     try:
         id_telegram = message.chat.id
         estudiante_id = obtener_id_estudiante(id_telegram)
+        print(estudiante_id)
+        print(id_telegram)
         url = f'https://localhost:8080/api/solicitud_tutor/obtenerSolicitudTutorEstudiante/{estudiante_id}'
 
        # Agregar el token JWT al encabezado de autorización
